@@ -302,10 +302,10 @@ Deno.serve(async (req) => {
 
         for (const r of dataRows) {
           const name = isHotspot
-            ? getField(r, ["name", "hotspot_name", "blackspot_name", "spot_name", "location_name", "junction"])
+            ? getField(r, ["name", "hotspot_name", "blackspot_name", "spot_name", "location_name", "junction", "police_station", "accident_spot", "ps_name"])
             : getField(r, ["name", "facility_name", "service_name", "provider_name", "hospital_name", "company_name", "rep_name"]);
 
-          const area = getField(r, ["area", "ward", "locality", "address", "location", "pincode", "zone"]);
+          const area = getField(r, ["area", "ward", "locality", "address", "location", "pincode", "zone", "police_station", "accident_spot", "road_class"]);
           const rawLat = Number(getField(r, ["lat", "latitude"]));
           const rawLng = Number(getField(r, ["lng", "longitude", "lon", "long"]));
           const email = getField(r, ["email", "email_id", "email_pii", "rep_email", "rep_email_pii"]);
