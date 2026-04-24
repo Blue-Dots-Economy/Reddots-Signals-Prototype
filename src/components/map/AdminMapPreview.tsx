@@ -64,7 +64,7 @@ function createAdminMarkerContent(icon?: string): HTMLElement {
 }
 
 function createAdminPopup(dot: DotPoint): string {
-  const svgPath = iconSvgPaths[dot.icon || "book"] || iconSvgPaths.book;
+  const svgPath = iconSvgPaths[normalizeIconKey(dot.icon)] || iconSvgPaths.default;
   return `
     <div style="font-family:system-ui,sans-serif;min-width:200px;padding:12px;">
       <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
