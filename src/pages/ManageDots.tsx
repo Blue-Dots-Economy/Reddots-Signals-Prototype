@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { ArrowLeft, Upload, Plus, Trash2, Search, GraduationCap, BookOpen, Edit2, X, Check, MapPin, Compass, Building2, School, AlertTriangle } from "lucide-react";
-import { isUnderageFlagged } from "@/lib/studentFlags";
+
 import { toast } from "sonner";
 import { geocodeAddressDetailed, jitterCoords, delay } from "@/lib/geocode";
 import * as XLSX from "xlsx";
@@ -367,7 +367,7 @@ const ManageDots = () => {
                 </thead>
                 <tbody>
                   {filteredDots.map((d: any) => {
-                    const flagged = mode === "student" && isUnderageFlagged(d);
+                    const flagged = false;
                     return (
                     <tr key={d.id} className={`border-b border-border/50 transition-colors ${flagged ? "bg-red-50 dark:bg-red-950/20 opacity-60" : "hover:bg-muted/20"}`}>
                       {columns.map((c) => (
