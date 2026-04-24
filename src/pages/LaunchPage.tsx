@@ -120,8 +120,8 @@ const LaunchPage = () => {
           riskLevel: r.relevance,
           roadClass: r.nature_of_job,
           topCollision: r.services,
-          kind: "hotspot",
-          iconKey: "warning",
+          kind: (r.kind === "pothole" ? "pothole" : "hotspot"),
+          iconKey: r.kind === "pothole" ? "warning" : "warning",
           raw: r,
         }))
       );
@@ -155,7 +155,8 @@ const LaunchPage = () => {
               totalAccidents: r.openings, deaths: r.job_role_salary,
               injured: r.work_experience_years, fatalityRate: r.rating,
               riskLevel: r.relevance, roadClass: r.nature_of_job, topCollision: r.services,
-              kind: "hotspot", iconKey: "warning", raw: r,
+              kind: (r.kind === "pothole" ? "pothole" : "hotspot"),
+              iconKey: "warning", raw: r,
             }))
           );
         });
@@ -205,6 +206,7 @@ const LaunchPage = () => {
           if (!(d.availability || "").toLowerCase().includes("24")) return false;
         }
       } else {
+        if (activeFilters.dotType && d.kind !== activeFilters.dotType) return false;
         if (activeFilters.risk && activeFilters.risk.length > 0) {
           if (!activeFilters.risk.includes((d.riskLevel || "").toUpperCase())) return false;
         }
