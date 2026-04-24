@@ -3,9 +3,36 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Sheet, RefreshCw, Trash2, Link2, CheckCircle2, AlertCircle, Clock, Loader2 } from "lucide-react";
 
-const YELLOW = "#DC143C";
+const RED = "#DC143C";
 
-type DotMode = "student" | "tutor" | "counsellor" | "centre" | "college";
+type DotMode = "student" | "centre";
+
+const MODE_META: Record<DotMode, { label: string; pillText: string; helper: React.ReactNode }> = {
+  student: {
+    label: "Service Providers",
+    pillText: "Services",
+    helper: (
+      <>
+        Link a sheet of <strong>service providers</strong> (hospitals, ambulances, mechanics, tow trucks, SSM volunteers, fuel stations).
+        Recognised columns: <strong>name</strong>, <strong>area</strong>, <strong>category</strong> (hospital / ambulance / mechanic / tow / ssm / fuel),
+        <strong> service_type</strong> (government / private / volunteer), <strong>availability</strong>, <strong>contact</strong>, <strong>email</strong>,
+        plus optional <strong>lat</strong>/<strong>lng</strong>, <strong>speciality</strong>, <strong>cost</strong>, <strong>golden_hour_empanelled</strong>.
+      </>
+    ),
+  },
+  centre: {
+    label: "Accident Hotspots",
+    pillText: "Hotspots",
+    helper: (
+      <>
+        Link an iRAD-style sheet of <strong>accident hotspots</strong>. Recognised columns: <strong>name</strong>, <strong>area</strong>,
+        <strong> risk_level</strong> (critical / high / moderate), <strong>road_class</strong>, <strong>total_accidents</strong>,
+        <strong> deaths</strong>, <strong>injured</strong>, <strong>fatality_rate</strong>, <strong>top_collision_type</strong>,
+        plus optional <strong>lat</strong>/<strong>lng</strong> and <strong>address</strong>.
+      </>
+    ),
+  },
+};
 
 interface SheetConfig {
   id: string;
@@ -112,7 +139,7 @@ export default function GoogleSheetSync({ mode, onSyncComplete }: { mode: DotMod
       } else {
         const syncResult = result.results?.[0];
         if (syncResult?.status === "success") {
-          toast.success(`Synced ${syncResult.count} ${mode} dots from sheet`);
+          toast.success(`Synced ${syncResult.count} ${MODE_META[mode].label.toLowerCase()} from sheet`);
         } else {
           toast.error(syncResult?.error || "Sync failed");
         }
@@ -157,15 +184,15 @@ export default function GoogleSheetSync({ mode, onSyncComplete }: { mode: DotMod
   return (
     <div className="bg-card border border-border rounded-xl p-4 sm:p-5 space-y-4">
       <div className="flex items-center gap-2">
-        <Sheet size={16} style={{ color: YELLOW }} />
+        <Sheet size={16} style={{ color: RED }} />
         <h3 className="text-sm font-semibold text-foreground">Google Sheets Sync</h3>
         <span className="text-[10px] px-2 py-0.5 rounded-full bg-muted text-muted-foreground font-medium">
-          {mode === "student" ? "Seeker" : "Tutor"} Dots
+          {MODE_META[mode].label}
         </span>
       </div>
 
-      <p className="text-xs text-muted-foreground">
-        Link a Google Sheet to auto-sync {mode} dots. Shared tutor sheets can use flexible headers like <strong>name</strong>/<strong>rep_name</strong>, <strong>email</strong>/<strong>rep_email</strong>, <strong>area</strong>/<strong>pincode</strong>, plus optional lat/lng.
+      <p className="text-xs text-muted-foreground leading-relaxed">
+        {MODE_META[mode].helper}
       </p>
 
       {/* Link new sheet */}
@@ -181,7 +208,7 @@ export default function GoogleSheetSync({ mode, onSyncComplete }: { mode: DotMod
           onClick={handleLink}
           disabled={linking}
           className="flex items-center gap-1.5 text-sm font-medium px-4 py-2 rounded-lg text-white transition-colors disabled:opacity-50"
-          style={{ background: YELLOW }}
+          style={{ background: RED }}
         >
           <Link2 size={14} /> {linking ? "Linking..." : "Link Sheet"}
         </button>
