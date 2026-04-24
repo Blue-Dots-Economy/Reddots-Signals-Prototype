@@ -302,10 +302,10 @@ Deno.serve(async (req) => {
 
         for (const r of dataRows) {
           const name = isHotspot
-            ? getField(r, ["name", "hotspot_name", "blackspot_name", "spot_name", "location_name", "junction"])
+            ? getField(r, ["name", "hotspot_name", "blackspot_name", "spot_name", "location_name", "junction", "police_station", "accident_spot", "ps_name"])
             : getField(r, ["name", "facility_name", "service_name", "provider_name", "hospital_name", "company_name", "rep_name"]);
 
-          const area = getField(r, ["area", "ward", "locality", "address", "location", "pincode", "zone"]);
+          const area = getField(r, ["area", "ward", "locality", "address", "location", "pincode", "zone", "police_station", "accident_spot", "road_class"]);
           const rawLat = Number(getField(r, ["lat", "latitude"]));
           const rawLng = Number(getField(r, ["lng", "longitude", "lon", "long"]));
           const email = getField(r, ["email", "email_id", "email_pii", "rep_email", "rep_email_pii"]);
@@ -343,11 +343,11 @@ Deno.serve(async (req) => {
               description: getField(r, ["description", "remarks", "notes"]) || null,
               relevance: risk,
               nature_of_job: getField(r, ["road_class", "road_type", "highway_class", "road_category"]) || null,
-              openings: getField(r, ["total_accidents", "accidents", "incidents", "crashes"]) || null,
-              job_role_salary: getField(r, ["deaths", "fatalities", "killed"]) || null,
+              openings: getField(r, ["total_accidents", "accidents", "incidents", "crashes"]) || "1",
+              job_role_salary: getField(r, ["deaths", "fatalities", "killed", "dead"]) || null,
               work_experience_years: getField(r, ["injured", "injuries", "wounded"]) || null,
               rating: getField(r, ["fatality_rate", "fatality_pct", "killed_per_100"]) || null,
-              services: getField(r, ["top_collision_type", "collision_type", "primary_collision", "main_cause"]) || null,
+              services: getField(r, ["top_collision_type", "collision_type", "primary_collision", "main_cause", "collision_nature"]) || null,
               address: getField(r, ["address", "full_address", "landmark"]) || null,
               availability: null,
               fees: null,
