@@ -92,7 +92,7 @@ const PersonaMap = ({ profile, filters, dots, filteredDots, activeFilters, onFil
     if (!g?.maps) return;
     const map = new g.maps.Map(mapRef.current, {
       center: { lat: profile.lat, lng: profile.lng },
-      zoom: 13,
+      zoom: 12,
       minZoom: MIN_ZOOM,
       maxZoom: MAX_ZOOM,
       disableDefaultUI: true,
@@ -149,11 +149,11 @@ const PersonaMap = ({ profile, filters, dots, filteredDots, activeFilters, onFil
     });
   }, [filteredDots, mapReady, allConnections]);
 
-  const handleZoomIn = () => { const m = mapInstance.current; if (m) m.setZoom((m.getZoom() || 13) + 1); };
-  const handleZoomOut = () => { const m = mapInstance.current; if (m) m.setZoom((m.getZoom() || 13) - 1); };
+  const handleZoomIn = () => { const m = mapInstance.current; if (m) m.setZoom((m.getZoom() || 12) + 1); };
+  const handleZoomOut = () => { const m = mapInstance.current; if (m) m.setZoom((m.getZoom() || 12) - 1); };
   const handleReset = () => {
     const m = mapInstance.current;
-    if (m) { m.setCenter({ lat: profile.lat, lng: profile.lng }); m.setZoom(13); }
+    if (m) { m.setCenter({ lat: profile.lat, lng: profile.lng }); m.setZoom(12); }
   };
 
   return (

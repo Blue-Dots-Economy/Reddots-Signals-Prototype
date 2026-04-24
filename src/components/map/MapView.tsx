@@ -350,7 +350,7 @@ const MapView = () => {
     mapInstanceRef.current = map;
     infoWindowRef.current = new g.maps.InfoWindow();
 
-    fetch("/delhi-ncr.geojson").then((r) => r.json()).then((data) => {
+    fetch("/__skip__.geojson").catch(()=>null) /* boundary disabled for Guwahati */; (null as any) ?? Promise.resolve(null).then((r) => r.json()).then((data) => {
       if (!mapInstanceRef.current) return;
       const dataLayer = new g.maps.Data({ map: mapInstanceRef.current });
       dataLayer.addGeoJson(data);
@@ -450,7 +450,7 @@ const MapView = () => {
   const handleZoomOut = () => { const m = mapInstanceRef.current; if (m) m.setZoom((m.getZoom() || DEFAULT_ZOOM) - 1); };
   const handleReset = () => {
     const m = mapInstanceRef.current; if (!m) return;
-    if (userLocation.loaded && userLocation.lat) { m.setCenter({ lat: userLocation.lat, lng: userLocation.lng }); m.setZoom(13); }
+    if (userLocation.loaded && userLocation.lat) { m.setCenter({ lat: userLocation.lat, lng: userLocation.lng }); m.setZoom(12); }
     else { m.setCenter({ lat: GHAZIABAD_CENTER[0], lng: GHAZIABAD_CENTER[1] }); m.setZoom(DEFAULT_ZOOM); }
   };
 
