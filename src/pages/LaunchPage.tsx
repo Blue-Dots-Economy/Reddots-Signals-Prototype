@@ -183,9 +183,12 @@ const LaunchPage = () => {
 
   const dots: RedDot[] = activeView === "accidents" ? hotspots : services;
 
+  const MAX_DOTS_ON_MAP = 50;
+  const RISK_RANK: Record<string, number> = { CRITICAL: 0, HIGH: 1, MODERATE: 2, LOW: 3 };
+
   const filteredDots = useMemo(() => {
     if (!profile) return dots;
-    return dots.filter((d) => {
+    const matched = dots.filter((d) => {
       if (activeFilters.distance) {
         const dist = haversineKm(profile.lat, profile.lng, d.lat, d.lng);
         if (dist > activeFilters.distance) return false;
@@ -216,6 +219,20 @@ const LaunchPage = () => {
       }
       return true;
     });
+
+    // Cap to top N by relevance:
+    // - Accidents: rank by riskLevel (CRITICAL > HIGH > MODERATE > LOW)
+    // - Services: keep first N (already ordered by created_at desc from query)
+    // Distance to user is the tiebreaker so closer dots win.
+    const sorted = [...matched].sort((a, b) => {
+      const ra = RISK_RANK[(a.riskLevel || "").toUpperCase()] ?? 99;
+      const rb = RISK_RANK[(b.riskLevel || "").toUpperCase()] ?? 99;
+      if (ra !== rb) return ra - rb;
+      const da = haversineKm(profile.lat, profile.lng, a.lat, a.lng);
+      const db = haversineKm(profile.lat, profile.lng, b.lat, b.lng);
+      return da - db;
+    });
+    return sorted.slice(0, MAX_DOTS_ON_MAP);
   }, [dots, activeFilters, profile]);
 
   if (!profile) {
