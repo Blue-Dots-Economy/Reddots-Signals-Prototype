@@ -20,10 +20,10 @@ const ChatRouting = ({ userName, onChoose }: Props) => (
     <div className="relative z-10 w-full max-w-md px-4 sm:px-6 space-y-6 animate-fade-in pt-[env(safe-area-inset-top)] pb-[calc(env(safe-area-inset-bottom)+1rem)]">
       <div className="text-center space-y-2">
         <p className="text-xs uppercase tracking-wider text-muted-foreground font-semibold">
-          नमस्ते {userName.split(" ")[0]}
+          Hi {userName.split(" ")[0]}
         </p>
         <h1 className="text-2xl sm:text-3xl font-extrabold text-foreground tracking-tight">
-          आपको क्या चाहिए?
+          What do you need?
         </h1>
         <p className="text-sm text-muted-foreground">What do you need right now?</p>
       </div>
@@ -41,7 +41,7 @@ const ChatRouting = ({ userName, onChoose }: Props) => (
             <Cross size={22} className="text-white" strokeWidth={2.5} />
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-base font-bold text-foreground leading-tight">पास की मदद ढूंढें</p>
+            <p className="text-base font-bold text-foreground leading-tight">Find help nearby</p>
             <p className="text-xs text-muted-foreground mt-1">
               Hospital, mechanic, ambulance, tow truck
             </p>
@@ -60,7 +60,7 @@ const ChatRouting = ({ userName, onChoose }: Props) => (
             <AlertTriangle size={22} className="text-white" strokeWidth={2.5} />
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-base font-bold text-foreground leading-tight">Road problem report करें</p>
+            <p className="text-base font-bold text-foreground leading-tight">Report a road problem</p>
             <p className="text-xs text-muted-foreground mt-1">
               Pothole, accident hotspot, dangerous road
             </p>

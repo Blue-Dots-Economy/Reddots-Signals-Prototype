@@ -73,7 +73,7 @@ const AuthPage = () => {
             </div>
             <h1 className="text-2xl font-extrabold text-foreground tracking-tight">Red Dots</h1>
             <p className="text-sm font-semibold text-foreground">
-              सड़क पर मुसीबत में? पास की मदद ढूंढें
+              Trouble on the road? Find help nearby
             </p>
             <p className="text-xs text-muted-foreground">
               Find nearest hospitals, mechanics, and first responders — or report road hazards
