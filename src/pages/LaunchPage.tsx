@@ -17,6 +17,7 @@ export interface RedDotFilters {
   // Accidents
   risk?: string[];            // CRITICAL, HIGH, MODERATE
   roadClass?: string[];       // National Highway, State Highway, etc.
+  dotType?: "hotspot" | "pothole"; // undefined = All
   // Shared
   distance?: number;
   search?: string;
@@ -46,7 +47,7 @@ export interface RedDot {
   roadClass?: string;
   topCollision?: string;
   // What kind of dot this is
-  kind: "service" | "hotspot";
+  kind: "service" | "hotspot" | "pothole";
   iconKey?: string;
   raw: Record<string, any>;
 }
