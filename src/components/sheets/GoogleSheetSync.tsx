@@ -3,9 +3,36 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Sheet, RefreshCw, Trash2, Link2, CheckCircle2, AlertCircle, Clock, Loader2 } from "lucide-react";
 
-const YELLOW = "#DC143C";
+const RED = "#DC143C";
 
-type DotMode = "student" | "tutor" | "counsellor" | "centre" | "college";
+type DotMode = "student" | "centre";
+
+const MODE_META: Record<DotMode, { label: string; pillText: string; helper: React.ReactNode }> = {
+  student: {
+    label: "Service Providers",
+    pillText: "Services",
+    helper: (
+      <>
+        Link a sheet of <strong>service providers</strong> (hospitals, ambulances, mechanics, tow trucks, SSM volunteers, fuel stations).
+        Recognised columns: <strong>name</strong>, <strong>area</strong>, <strong>category</strong> (hospital / ambulance / mechanic / tow / ssm / fuel),
+        <strong> service_type</strong> (government / private / volunteer), <strong>availability</strong>, <strong>contact</strong>, <strong>email</strong>,
+        plus optional <strong>lat</strong>/<strong>lng</strong>, <strong>speciality</strong>, <strong>cost</strong>, <strong>golden_hour_empanelled</strong>.
+      </>
+    ),
+  },
+  centre: {
+    label: "Accident Hotspots",
+    pillText: "Hotspots",
+    helper: (
+      <>
+        Link an iRAD-style sheet of <strong>accident hotspots</strong>. Recognised columns: <strong>name</strong>, <strong>area</strong>,
+        <strong> risk_level</strong> (critical / high / moderate), <strong>road_class</strong>, <strong>total_accidents</strong>,
+        <strong> deaths</strong>, <strong>injured</strong>, <strong>fatality_rate</strong>, <strong>top_collision_type</strong>,
+        plus optional <strong>lat</strong>/<strong>lng</strong> and <strong>address</strong>.
+      </>
+    ),
+  },
+};
 
 interface SheetConfig {
   id: string;
