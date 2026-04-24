@@ -265,6 +265,68 @@ const AdminDashboard = () => {
               </Panel>
             </div>
 
+            {/* Analytics charts */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
+              <Panel title="Risk Distribution by Area" icon={<BarChart3 size={16} style={{ color: RED }} />}>
+                {riskByArea.length === 0 ? (
+                  <EmptyState text="No hotspot data to chart yet." />
+                ) : (
+                  <div style={{ width: "100%", height: 280 }}>
+                    <ResponsiveContainer>
+                      <BarChart data={riskByArea} margin={{ top: 8, right: 8, left: -16, bottom: 8 }}>
+                        <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                        <XAxis dataKey="area" tick={{ fontSize: 10 }} interval={0} angle={-25} textAnchor="end" height={56} />
+                        <YAxis tick={{ fontSize: 11 }} allowDecimals={false} />
+                        <Tooltip contentStyle={{ fontSize: 12, borderRadius: 8 }} />
+                        <Legend wrapperStyle={{ fontSize: 11 }} />
+                        <Bar dataKey="CRITICAL" stackId="r" fill={RISK_META.CRITICAL.color} />
+                        <Bar dataKey="HIGH" stackId="r" fill={RISK_META.HIGH.color} />
+                        <Bar dataKey="MODERATE" stackId="r" fill={RISK_META.MODERATE.color} />
+                      </BarChart>
+                    </ResponsiveContainer>
+                  </div>
+                )}
+              </Panel>
+
+              <Panel title="Service Mix" icon={<PieIcon size={16} style={{ color: RED }} />}>
+                {servicesByCategory.length === 0 ? (
+                  <EmptyState text="No services to chart yet." />
+                ) : (
+                  <div style={{ width: "100%", height: 280 }}>
+                    <ResponsiveContainer>
+                      <PieChart>
+                        <Tooltip contentStyle={{ fontSize: 12, borderRadius: 8 }} />
+                        <Legend wrapperStyle={{ fontSize: 11 }} />
+                        <Pie data={servicesByCategory} dataKey="value" nameKey="name" innerRadius={50} outerRadius={90} paddingAngle={2}>
+                          {servicesByCategory.map((d, i) => <Cell key={i} fill={d.color} />)}
+                        </Pie>
+                      </PieChart>
+                    </ResponsiveContainer>
+                  </div>
+                )}
+              </Panel>
+            </div>
+
+            <Panel title="Top 10 Deadliest Hotspots" icon={<TrendingUp size={16} style={{ color: GREY }} />}>
+              {topFatalHotspots.length === 0 ? (
+                <EmptyState text="No fatality data recorded yet." />
+              ) : (
+                <div style={{ width: "100%", height: Math.max(220, topFatalHotspots.length * 30) }}>
+                  <ResponsiveContainer>
+                    <BarChart data={topFatalHotspots} layout="vertical" margin={{ top: 4, right: 16, left: 8, bottom: 4 }}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" horizontal={false} />
+                      <XAxis type="number" tick={{ fontSize: 11 }} allowDecimals={false} />
+                      <YAxis type="category" dataKey="name" tick={{ fontSize: 11 }} width={140} />
+                      <Tooltip contentStyle={{ fontSize: 12, borderRadius: 8 }} />
+                      <Legend wrapperStyle={{ fontSize: 11 }} />
+                      <Bar dataKey="deaths" fill={RISK_META.CRITICAL.color} name="Deaths" />
+                      <Bar dataKey="accidents" fill={RISK_META.HIGH.color} name="Accidents" />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
+              )}
+            </Panel>
+
             {/* Recent dots */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
               <Panel title="Recently added Services" icon={<MapPin size={16} style={{ color: RED }} />}>
