@@ -78,9 +78,12 @@ const AuthPage = ({ role }: AuthPageProps) => {
               </svg>
             </div>
             <h1 className="text-2xl font-extrabold text-foreground tracking-tight">Red Dots</h1>
-            <p className="text-sm text-muted-foreground">
-              {role === "student" ? "Find internships and jobs near you" : "Find candidates near your business"}
+            <p className="text-sm font-semibold text-foreground">
+              {role === "student" ? "सड़क पर मुसीबत में? पास की मदद ढूंढें" : "Report road hazards and track accident hotspots"}
             </p>
+            {role === "student" && (
+              <p className="text-xs text-muted-foreground">Find nearest hospitals, mechanics, and first responders</p>
+            )}
           </div>
 
           {notFound ? (
