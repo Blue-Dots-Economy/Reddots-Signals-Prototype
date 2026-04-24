@@ -4,8 +4,12 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import {
   LogOut, CircleDot, AlertTriangle, Hospital, Wrench, Truck, Users,
-  Fuel, Ambulance, BarChart3, MapPin, Activity,
+  Fuel, Ambulance, BarChart3, MapPin, Activity, TrendingUp, PieChart as PieIcon,
 } from "lucide-react";
+import {
+  ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid,
+  PieChart, Pie, Cell, Legend,
+} from "recharts";
 
 const RED = "#DC143C";
 const GREY = "#4A4A4A";
