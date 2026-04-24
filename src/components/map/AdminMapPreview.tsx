@@ -50,8 +50,8 @@ interface Props {
   title: string;
 }
 
-function createAdminMarkerContent(icon: string = "book"): HTMLElement {
-  const svgPath = iconSvgPaths[icon] || iconSvgPaths.book;
+function createAdminMarkerContent(icon?: string): HTMLElement {
+  const svgPath = iconSvgPaths[normalizeIconKey(icon)] || iconSvgPaths.default;
   const container = document.createElement("div");
   container.innerHTML = `
     <div style="position:relative;transition:transform 0.3s ease;cursor:pointer;">
