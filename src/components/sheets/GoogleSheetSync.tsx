@@ -212,13 +212,20 @@ export default function GoogleSheetSync({ mode, onSyncComplete }: { mode: DotMod
       </p>
 
       {/* Link new sheet */}
-      <div className="flex gap-2">
+      <div className="flex flex-col sm:flex-row gap-2">
         <input
           type="text"
           value={sheetUrl}
           onChange={(e) => setSheetUrl(e.target.value)}
           placeholder="Paste Google Sheet URL..."
           className="flex-1 px-3 py-2 rounded-lg border border-input bg-background text-foreground text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+        />
+        <input
+          type="text"
+          value={sheetTabName}
+          onChange={(e) => setSheetTabName(e.target.value)}
+          placeholder="Tab (optional, e.g. Sheet1)"
+          className="w-full sm:w-48 px-3 py-2 rounded-lg border border-input bg-background text-foreground text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
         />
         <button
           onClick={handleLink}
@@ -229,6 +236,9 @@ export default function GoogleSheetSync({ mode, onSyncComplete }: { mode: DotMod
           <Link2 size={14} /> {linking ? "Linking..." : "Link Sheet"}
         </button>
       </div>
+      <p className="text-[10px] text-muted-foreground -mt-2">
+        Leave the tab field empty to auto-detect the first tab in the spreadsheet.
+      </p>
 
       {/* Linked sheets */}
       {loading ? (
@@ -253,10 +263,31 @@ export default function GoogleSheetSync({ mode, onSyncComplete }: { mode: DotMod
                       : config.sheet_url}
                   </span>
                 </div>
-                <div className="flex items-center gap-3 mt-1">
+                <div className="flex items-center gap-3 mt-1 flex-wrap">
                   <span className="text-[10px] text-muted-foreground">
                     Last synced: {formatDate(config.last_synced_at)}
                   </span>
+                  {editingTabId === config.id ? (
+                    <span className="inline-flex items-center gap-1">
+                      <input
+                        type="text"
+                        value={tabDraft}
+                        onChange={(e) => setTabDraft(e.target.value)}
+                        placeholder="Tab name"
+                        className="text-[10px] px-1.5 py-0.5 rounded border border-input bg-background w-32"
+                        autoFocus
+                      />
+                      <button onClick={() => saveTabName(config.id)} className="text-[10px] font-semibold text-green-600">Save</button>
+                      <button onClick={() => setEditingTabId(null)} className="text-[10px] text-muted-foreground">Cancel</button>
+                    </span>
+                  ) : (
+                    <button
+                      onClick={() => { setEditingTabId(config.id); setTabDraft(config.sheet_tab_name || ""); }}
+                      className="text-[10px] text-muted-foreground hover:text-foreground underline decoration-dotted"
+                    >
+                      Tab: {config.sheet_tab_name || "auto"}
+                    </button>
+                  )}
                   {config.sync_error && (
                     <span className="text-[10px] text-destructive truncate max-w-[200px]">
                       Error: {config.sync_error}
