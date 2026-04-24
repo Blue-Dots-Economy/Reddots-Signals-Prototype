@@ -71,8 +71,9 @@ async function getAccessToken(sa: ServiceAccountKey): Promise<string> {
   const textEncoder = new TextEncoder();
   const signingInput = `${header}.${payload}`;
   const binaryKey = decodePrivateKey(sa.private_key);
+  const keyBuffer = binaryKey.buffer.slice(binaryKey.byteOffset, binaryKey.byteOffset + binaryKey.byteLength) as ArrayBuffer;
   const cryptoKey = await crypto.subtle.importKey(
-    "pkcs8", binaryKey, { name: "RSASSA-PKCS1-v1_5", hash: "SHA-256" }, false, ["sign"]
+    "pkcs8", keyBuffer, { name: "RSASSA-PKCS1-v1_5", hash: "SHA-256" }, false, ["sign"]
   );
   const signature = await crypto.subtle.sign("RSASSA-PKCS1-v1_5", cryptoKey, textEncoder.encode(signingInput));
   const sig = btoa(String.fromCharCode(...new Uint8Array(signature)))
