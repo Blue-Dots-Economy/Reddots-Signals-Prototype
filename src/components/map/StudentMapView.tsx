@@ -319,12 +319,7 @@ const StudentMapView = ({ activeView, onSwitchView }: StudentMapViewProps = {}) 
     mapInstanceRef.current = map;
     infoWindowRef.current = new g.maps.InfoWindow();
 
-    fetch("/__skip__.geojson").catch(()=>null) /* boundary disabled for Guwahati */; (null as any) ?? Promise.resolve(null).then((r) => r.json()).then((data) => {
-      if (!mapInstanceRef.current) return;
-      const dataLayer = new g.maps.Data({ map: mapInstanceRef.current });
-      dataLayer.addGeoJson(data);
-      dataLayer.setStyle({ strokeColor: "#DC143C", strokeWeight: 2.5, strokeOpacity: 0.6, fillColor: "#DC143C", fillOpacity: 0.06, clickable: false });
-    }).catch(() => {});
+    // Boundary overlay disabled for Guwahati (no geojson available yet).
 
     setMapReady(true);
     return () => {
