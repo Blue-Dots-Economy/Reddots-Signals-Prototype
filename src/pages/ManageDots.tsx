@@ -8,6 +8,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { geocodeAddressDetailed, jitterCoords, delay } from "@/lib/geocode";
+import { selectDistributedTopN } from "@/lib/mapSelection";
 import * as XLSX from "xlsx";
 import AdminMapPreview from "@/components/map/AdminMapPreview";
 import GoogleSheetSync from "@/components/sheets/GoogleSheetSync";
@@ -225,7 +226,7 @@ const ManageDots = () => {
   };
 
   const getMapDots = () => {
-    const ranked = [...filteredDots].sort((a: any, b: any) => {
+    const compareDots = (a: any, b: any) => {
       if (mode === "hotspot") {
         const riskA = RISK_RANK[(a.relevance || "").toUpperCase()] ?? 99;
         const riskB = RISK_RANK[(b.relevance || "").toUpperCase()] ?? 99;
@@ -241,9 +242,9 @@ const ManageDots = () => {
       }
 
       return new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime();
-    });
+    };
 
-    return ranked.slice(0, MAX_DOTS_ON_MAP).map((d: any) => ({
+    return selectDistributedTopN(filteredDots, MAX_DOTS_ON_MAP, compareDots).map((d: any) => ({
       id: d.id, name: d.name, lat: d.lat, lng: d.lng,
       label: mode === "service" ? d.category : d.relevance,
       icon: mode === "service" ? (d.icon || d.category) : "warning",
