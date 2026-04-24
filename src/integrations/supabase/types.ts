@@ -49,6 +49,7 @@ export type Database = {
           id: string
           internship: string | null
           job_role_salary: string | null
+          kind: string
           last_role_held: string | null
           lat: number
           lng: number
@@ -82,6 +83,7 @@ export type Database = {
           id?: string
           internship?: string | null
           job_role_salary?: string | null
+          kind?: string
           last_role_held?: string | null
           lat: number
           lng: number
@@ -115,6 +117,7 @@ export type Database = {
           id?: string
           internship?: string | null
           job_role_salary?: string | null
+          kind?: string
           last_role_held?: string | null
           lat?: number
           lng?: number
@@ -468,6 +471,7 @@ export type Database = {
           id: string
           last_synced_at: string | null
           sheet_id: string
+          sheet_tab_name: string
           sheet_url: string
           sync_error: string | null
           sync_status: string | null
@@ -479,6 +483,7 @@ export type Database = {
           id?: string
           last_synced_at?: string | null
           sheet_id: string
+          sheet_tab_name?: string
           sheet_url: string
           sync_error?: string | null
           sync_status?: string | null
@@ -490,6 +495,7 @@ export type Database = {
           id?: string
           last_synced_at?: string | null
           sheet_id?: string
+          sheet_tab_name?: string
           sheet_url?: string
           sync_error?: string | null
           sync_status?: string | null
