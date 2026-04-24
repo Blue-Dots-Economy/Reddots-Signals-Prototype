@@ -14,6 +14,8 @@ import GoogleSheetSync from "@/components/sheets/GoogleSheetSync";
 
 const RED = "#DC143C";
 const GREY = "#4A4A4A";
+const MAX_DOTS_ON_MAP = 50;
+const RISK_RANK: Record<string, number> = { CRITICAL: 0, HIGH: 1, MODERATE: 2, LOW: 3 };
 
 type DotMode = "service" | "hotspot";
 
@@ -223,8 +225,25 @@ const ManageDots = () => {
   };
 
   const getMapDots = () => {
-    const list = getCurrentDots();
-    return list.map((d: any) => ({
+    const ranked = [...filteredDots].sort((a: any, b: any) => {
+      if (mode === "hotspot") {
+        const riskA = RISK_RANK[(a.relevance || "").toUpperCase()] ?? 99;
+        const riskB = RISK_RANK[(b.relevance || "").toUpperCase()] ?? 99;
+        if (riskA !== riskB) return riskA - riskB;
+
+        const deathsA = Number(a.job_role_salary || 0);
+        const deathsB = Number(b.job_role_salary || 0);
+        if (deathsA !== deathsB) return deathsB - deathsA;
+
+        const accidentsA = Number(a.openings || 0);
+        const accidentsB = Number(b.openings || 0);
+        if (accidentsA !== accidentsB) return accidentsB - accidentsA;
+      }
+
+      return new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime();
+    });
+
+    return ranked.slice(0, MAX_DOTS_ON_MAP).map((d: any) => ({
       id: d.id, name: d.name, lat: d.lat, lng: d.lng,
       label: mode === "service" ? d.category : d.relevance,
       icon: mode === "service" ? (d.icon || d.category) : "warning",
