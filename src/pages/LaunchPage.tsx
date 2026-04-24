@@ -4,6 +4,7 @@ import { LogOut } from "lucide-react";
 import { loadProfile, clearProfile, setProfileView, type UserProfile, type RedDotsView } from "@/lib/phoneAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { haversineKm } from "@/lib/distance";
+import { selectDistributedTopN } from "@/lib/mapSelection";
 import ChatRouting from "@/components/ChatRouting";
 import PersonaMap from "@/components/map/PersonaMap";
 import PersonaListView from "@/components/map/PersonaListView";
@@ -224,15 +225,16 @@ const LaunchPage = () => {
     // - Accidents: rank by riskLevel (CRITICAL > HIGH > MODERATE > LOW)
     // - Services: keep first N (already ordered by created_at desc from query)
     // Distance to user is the tiebreaker so closer dots win.
-    const sorted = [...matched].sort((a, b) => {
+    const compareDots = (a: RedDot, b: RedDot) => {
       const ra = RISK_RANK[(a.riskLevel || "").toUpperCase()] ?? 99;
       const rb = RISK_RANK[(b.riskLevel || "").toUpperCase()] ?? 99;
       if (ra !== rb) return ra - rb;
       const da = haversineKm(profile.lat, profile.lng, a.lat, a.lng);
       const db = haversineKm(profile.lat, profile.lng, b.lat, b.lng);
       return da - db;
-    });
-    return sorted.slice(0, MAX_DOTS_ON_MAP);
+    };
+
+    return selectDistributedTopN(matched, MAX_DOTS_ON_MAP, compareDots);
   }, [dots, activeFilters, profile]);
 
   if (!profile) {
