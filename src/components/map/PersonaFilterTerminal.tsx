@@ -311,6 +311,35 @@ const PersonaFilterTerminal = ({ activeView, activeFilters, onFiltersChange, vis
           </>
         ) : (
           <>
+            {/* Dot Type toggle: Hotspots / Potholes / All */}
+            <div className="space-y-1.5">
+              <p className="text-[10px] uppercase tracking-wider opacity-50 font-semibold">Dot Type</p>
+              <div className="grid grid-cols-3 gap-1.5">
+                {[
+                  { value: undefined as any, label: "All", color: "#94A3B8" },
+                  { value: "hotspot", label: "Hotspots", color: RED },
+                  { value: "pothole", label: "Potholes", color: GREY },
+                ].map(({ value, label, color }) => {
+                  const isOn = activeFilters.dotType === value || (!activeFilters.dotType && value === undefined);
+                  return (
+                    <button
+                      key={label}
+                      onClick={() => updateFilter({ dotType: value })}
+                      className="rounded-lg border text-[11px] font-bold uppercase tracking-wide transition-colors min-h-[36px] flex items-center justify-center gap-1.5"
+                      style={{
+                        background: isOn ? color : "rgba(255,255,255,0.06)",
+                        borderColor: isOn ? color : "rgba(255,255,255,0.15)",
+                        color: isOn ? "#fff" : color,
+                      }}
+                    >
+                      {value && <span className="w-2 h-2 rounded-full inline-block" style={{ background: isOn ? "#fff" : color }} />}
+                      {label}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
             {/* Risk level pill toggle */}
             <div className="space-y-1.5">
               <p className="text-[10px] uppercase tracking-wider opacity-50 font-semibold flex items-center gap-1">

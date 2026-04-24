@@ -1,6 +1,8 @@
+import { useState } from "react";
 import { X, Phone, Navigation, AlertTriangle } from "lucide-react";
 import { toast } from "sonner";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { supabase } from "@/integrations/supabase/client";
 import type { RedDot } from "@/pages/LaunchPage";
 import type { RedDotsView } from "@/lib/phoneAuth";
 
@@ -102,9 +104,42 @@ function riskColors(level: string): { bg: string; fg: string } {
   return { bg: "#94A3B8", fg: "white" };
 }
 
+const HAZARD_TYPES = ["Pothole", "Poor Lighting", "Missing Divider", "Construction Zone", "Blind Turn", "Other"];
+const SEVERITIES = ["High", "Medium", "Low"] as const;
+
 const DotCardPanel = ({ dot, activeView, anchorPos, onClose }: Props) => {
   const phone = firstPhone(dot.contact);
   const directionsUrl = `https://www.google.com/maps/dir/?api=1&destination=${dot.lat},${dot.lng}`;
+  const [showHazardForm, setShowHazardForm] = useState(false);
+  const [hazardType, setHazardType] = useState(HAZARD_TYPES[0]);
+  const [hazardDesc, setHazardDesc] = useState("");
+  const [hazardSeverity, setHazardSeverity] = useState<typeof SEVERITIES[number]>("Medium");
+  const [submittingHazard, setSubmittingHazard] = useState(false);
+
+  const submitHazardReport = async () => {
+    setSubmittingHazard(true);
+    const ref = `RD-${Math.floor(100000 + Math.random() * 900000)}`;
+    // Best-effort: persist as a pothole dot near the current dot. RLS allows anon insert when kind='pothole'.
+    try {
+      await supabase.from("centre_dots").insert({
+        name: `${hazardType} report`,
+        area: dot.area || "Citizen report",
+        lat: dot.lat + (Math.random() - 0.5) * 0.001,
+        lng: dot.lng + (Math.random() - 0.5) * 0.001,
+        icon: "warning",
+        contact: "direct",
+        relevance: hazardSeverity.toUpperCase() === "HIGH" ? "HIGH" : hazardSeverity.toUpperCase() === "LOW" ? "MODERATE" : "MODERATE",
+        description: hazardDesc.trim() || null,
+        services: hazardType,
+        kind: "pothole",
+      } as any);
+    } catch { /* non-blocking */ }
+    setSubmittingHazard(false);
+    toast.success("Report submitted", { description: `Reference ${ref} — thanks for the heads-up.` });
+    setShowHazardForm(false);
+    onClose();
+  };
+
 
   // ── SERVICE PROVIDER CARD ──
   if (dot.kind === "service") {
@@ -231,12 +266,7 @@ const DotCardPanel = ({ dot, activeView, anchorPos, onClose }: Props) => {
         )}
 
         <button
-          onClick={() => {
-            toast.success("Hazard report submitted", {
-              description: "Thanks — we've logged this near " + dot.name + ".",
-            });
-            onClose();
-          }}
+          onClick={() => setShowHazardForm(true)}
           className="w-full flex items-center justify-center gap-2 text-sm font-bold text-white py-3 rounded-xl transition-opacity"
           style={{ background: GREY, boxShadow: "0 4px 14px rgba(74,74,74,0.3)" }}
         >
@@ -252,6 +282,75 @@ const DotCardPanel = ({ dot, activeView, anchorPos, onClose }: Props) => {
           <Navigation size={14} /> Open in Maps
         </a>
       </div>
+
+      {showHazardForm && (
+        <div className="fixed inset-0 z-[2100] bg-black/50 flex items-end sm:items-center justify-center animate-fade-in" onClick={() => setShowHazardForm(false)}>
+          <div
+            className="w-full sm:max-w-sm bg-white rounded-t-3xl sm:rounded-2xl p-5 pb-[calc(env(safe-area-inset-bottom)+1.25rem)] sm:pb-5 animate-slide-up"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-base font-bold text-gray-900">Report a hazard</h3>
+              <button onClick={() => setShowHazardForm(false)} className="text-gray-400 hover:text-gray-600"><X size={20} /></button>
+            </div>
+
+            <div className="space-y-3">
+              <div>
+                <label className="text-[11px] font-semibold uppercase tracking-wider text-gray-500 block mb-1">Hazard type</label>
+                <select
+                  value={hazardType}
+                  onChange={(e) => setHazardType(e.target.value)}
+                  className="w-full px-3 py-2.5 rounded-lg border border-gray-200 text-sm bg-white text-gray-900 focus:outline-none focus:border-gray-400"
+                >
+                  {HAZARD_TYPES.map((t) => <option key={t} value={t}>{t}</option>)}
+                </select>
+              </div>
+
+              <div>
+                <label className="text-[11px] font-semibold uppercase tracking-wider text-gray-500 block mb-1">
+                  Description <span className="text-gray-400 normal-case font-normal">(optional, {200 - hazardDesc.length} left)</span>
+                </label>
+                <textarea
+                  value={hazardDesc}
+                  onChange={(e) => setHazardDesc(e.target.value.slice(0, 200))}
+                  rows={3}
+                  placeholder="What did you see?"
+                  className="w-full px-3 py-2 rounded-lg border border-gray-200 text-sm bg-white text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-gray-400 resize-none"
+                />
+              </div>
+
+              <div>
+                <label className="text-[11px] font-semibold uppercase tracking-wider text-gray-500 block mb-1">Severity</label>
+                <div className="grid grid-cols-3 gap-1.5">
+                  {SEVERITIES.map((s) => (
+                    <button
+                      key={s}
+                      onClick={() => setHazardSeverity(s)}
+                      className="py-2 rounded-lg border text-xs font-bold uppercase transition-colors"
+                      style={
+                        hazardSeverity === s
+                          ? { background: GREY, borderColor: GREY, color: "white" }
+                          : { background: "white", borderColor: "#e5e7eb", color: "#4A4A4A" }
+                      }
+                    >
+                      {s}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <button
+                onClick={submitHazardReport}
+                disabled={submittingHazard}
+                className="w-full flex items-center justify-center gap-2 text-sm font-bold text-white py-3 rounded-xl mt-2 disabled:opacity-50"
+                style={{ background: GREY }}
+              >
+                {submittingHazard ? "Submitting…" : "Submit report"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </PanelShell>
   );
 };

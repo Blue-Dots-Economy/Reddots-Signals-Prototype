@@ -33,9 +33,9 @@ const ICON_SVGS: Record<string, string> = {
 };
 
 function dotColorFor(dot: RedDot, view: RedDotsView): string {
-  // Both views render crimson dots in this prototype.
-  // (Grey dots are reserved for future citizen-reported hazards.)
-  return view === "accidents" ? RED : RED;
+  // Accidents view: red for hotspots, grey for citizen-reported potholes.
+  if (view === "accidents") return dot.kind === "pothole" ? GREY : RED;
+  return RED;
 }
 
 function createDotMarker(dot: RedDot, view: RedDotsView, isUserNearest: boolean): HTMLElement {

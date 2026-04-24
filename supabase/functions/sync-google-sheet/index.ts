@@ -89,10 +89,26 @@ async function getAccessToken(sa: ServiceAccountKey): Promise<string> {
   return tokenData.access_token;
 }
 
-async function fetchSheetData(accessToken: string, spreadsheetId: string): Promise<string[][]> {
-  const url = `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/Sheet1?majorDimension=ROWS`;
+async function resolveTabName(accessToken: string, spreadsheetId: string, preferred?: string | null): Promise<string> {
+  // If a tab name is provided AND it isn't the legacy "Sheet1" placeholder, trust it.
+  // Otherwise fetch metadata and use the first tab's actual title.
+  if (preferred && preferred.trim() && preferred.trim() !== "Sheet1") return preferred.trim();
+  const metaUrl = `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}?fields=sheets.properties.title`;
+  const metaRes = await fetch(metaUrl, { headers: { Authorization: `Bearer ${accessToken}` } });
+  if (metaRes.ok) {
+    const meta = await metaRes.json();
+    const firstTitle = meta?.sheets?.[0]?.properties?.title;
+    if (firstTitle) return firstTitle;
+  }
+  return preferred?.trim() || "Sheet1";
+}
+
+async function fetchSheetData(accessToken: string, spreadsheetId: string, tabName: string): Promise<string[][]> {
+  // Quote tab name if it contains spaces or special chars
+  const range = /[\s'!:]/.test(tabName) ? `'${tabName.replace(/'/g, "''")}'` : tabName;
+  const url = `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/${encodeURIComponent(range)}?majorDimension=ROWS`;
   const res = await fetch(url, { headers: { Authorization: `Bearer ${accessToken}` } });
-  if (!res.ok) throw new Error(`Sheets API error [${res.status}]: ${await res.text()}`);
+  if (!res.ok) throw new Error(`Sheets API error [${res.status}] for tab "${tabName}": ${await res.text()}`);
   const data = await res.json();
   return data.values || [];
 }
@@ -244,8 +260,9 @@ Deno.serve(async (req) => {
           .update({ sync_status: "syncing", updated_at: new Date().toISOString() })
           .eq("id", config.id);
 
-        const rows = await fetchSheetData(accessToken, config.sheet_id);
-        console.log(`Sheet ${config.sheet_id} (${config.dot_type}): total rows = ${rows.length}`);
+        const tabName = await resolveTabName(accessToken, config.sheet_id, (config as any).sheet_tab_name);
+        const rows = await fetchSheetData(accessToken, config.sheet_id, tabName);
+        console.log(`Sheet ${config.sheet_id} (${config.dot_type}) tab "${tabName}": total rows = ${rows.length}`);
         if (rows.length > 0) console.log(`Raw headers: ${JSON.stringify(rows[0])}`);
         if (rows.length > 1) console.log(`First data row: ${JSON.stringify(rows[1])}`);
 
