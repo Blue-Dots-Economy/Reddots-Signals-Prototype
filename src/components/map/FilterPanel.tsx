@@ -258,7 +258,7 @@ const FilterPanel = ({
         </div>
       )}
 
-      <p className="text-xs opacity-40" style={{ fontSize: 12 }}>Showing {visibleCount} of {totalCount} Blue Dots</p>
+      <p className="text-xs opacity-40" style={{ fontSize: 12 }}>Showing {visibleCount} of {totalCount} Red Dots</p>
       <button onClick={onClearAll} className="text-xs underline opacity-50 hover:opacity-100 transition-opacity">Clear All Filters</button>
 
       {dots.length === 0 && (

@@ -2,7 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Design system for Blue Dots */
+/* Design system for Red Dots */
 
 @layer base {
   :root {
@@ -42,7 +42,7 @@
     --map-yellow: 217 91% 53%;
     --map-yellow-bright: 217 91% 60%;
 
-    /* Pillar colors — all Blue Dots themed */
+    /* Pillar colors — all Red Dots themed */
     --pillar-subject-tutoring: 217 91% 53%;
     --pillar-career-counselling: 217 91% 53%;
     --pillar-college-admissions: 217 91% 53%;

@@ -51,7 +51,7 @@ const StudentOnboarding = ({ onComplete, onReset }: Props) => {
       setMessages([
         {
           from: "bot",
-          text: "Hey! 👋 Welcome to Blue Dots. What are you looking for today?",
+          text: "Hey! 👋 Welcome to Red Dots. What are you looking for today?",
           options: [
             { label: "📚 Tutoring", value: "tutoring" },
             { label: "🎯 Admissions Counselling", value: "counselling" },
@@ -154,7 +154,7 @@ const StudentOnboarding = ({ onComplete, onReset }: Props) => {
             <MessageCircle size={16} className="text-white" />
           </div>
           <div>
-            <p className="text-sm font-bold text-foreground tracking-tight">Blue Dots Assistant</p>
+            <p className="text-sm font-bold text-foreground tracking-tight">Red Dots Assistant</p>
             <p className="text-[11px] text-muted-foreground">Let's find what you need</p>
           </div>
         </div>

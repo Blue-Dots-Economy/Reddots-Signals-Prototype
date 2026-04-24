@@ -110,5 +110,5 @@ tutorDots.forEach((dot) => {
   dot.name = anonymizeName(dot.name);
 });
 
-export const TUTOR_CENTER: [number, number] = [28.6139, 77.2090];
+export const TUTOR_CENTER: [number, number] = [26.1445, 91.7362];
 export const TUTOR_DEFAULT_ZOOM = 10;

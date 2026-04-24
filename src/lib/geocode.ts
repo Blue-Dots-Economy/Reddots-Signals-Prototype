@@ -2,7 +2,7 @@
  * Geocode an address string to lat/lng using OpenStreetMap Nominatim (free, no API key).
  * Falls back to a default location near Ghaziabad if geocoding fails.
  */
-const FALLBACK = { lat: 28.6139, lng: 77.2090 };
+const FALLBACK = { lat: 26.1445, lng: 91.7362 };
 
 export async function geocodeAddressDetailed(address: string): Promise<{ lat: number; lng: number; resolved: boolean }> {
   if (!address.trim()) return { ...FALLBACK, resolved: false };
