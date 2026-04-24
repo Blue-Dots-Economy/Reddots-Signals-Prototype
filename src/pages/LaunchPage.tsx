@@ -280,7 +280,7 @@ const LaunchPage = () => {
                 {activeView === "services" ? "Service Providers" : "Accident Hotspots"}
               </h2>
               <p className="text-[11px] text-muted-foreground truncate">
-                Showing {filteredDots.length} of {dots.length} Red Dots
+                Showing top {filteredDots.length} of {dots.length} Red Dots {dots.length > MAX_DOTS_ON_MAP ? "(by relevance)" : ""}
               </p>
             </div>
             <button
