@@ -6,84 +6,60 @@ import { MIN_ZOOM, MAX_ZOOM } from "@/lib/mapData";
 import ZoomControls from "./ZoomControls";
 import PersonaFilterTerminal from "./PersonaFilterTerminal";
 import DotCardPanel from "./DotCardPanel";
-import type { UserProfile } from "@/lib/phoneAuth";
-import type { ChatFilters } from "@/components/chat/PersonaChat";
-import { usePersonaConnections, type PersonaConnStatus } from "@/hooks/usePersonaConnections";
+import type { UserProfile, RedDotsView } from "@/lib/phoneAuth";
+import type { RedDot, RedDotFilters } from "@/pages/LaunchPage";
 
-const BLUE = "#DC143C";
-
-interface Dot {
-  id: string;
-  name: string;
-  area: string;
-  lat: number;
-  lng: number;
-  icon?: string;
-  nature_of_job?: string;
-  hiring_manager_name?: string;
-  contact?: string;
-  job_role_salary?: string;
-  [key: string]: any;
-}
+const RED = "#DC143C";
+const GREY = "#4A4A4A";
 
 interface Props {
   profile: UserProfile;
-  filters: ChatFilters;
-  dots: Dot[];
-  filteredDots: Dot[];
-  activeFilters: ChatFilters;
-  onFiltersChange: (f: ChatFilters) => void;
-  entityLabel: string;
-  isSeeker: boolean;
+  activeView: RedDotsView;
+  dots: RedDot[];
+  filteredDots: RedDot[];
+  activeFilters: RedDotFilters;
+  onFiltersChange: (f: RedDotFilters) => void;
 }
 
 const ICON_SVGS: Record<string, string> = {
-  briefcase: `<rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>`,
-  book: `<path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>`,
-  compass: `<circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/>`,
-  graduationCap: `<path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c0 2 6 3 6 3s6-1 6-3v-5"/>`,
-  wrench: `<path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>`,
-  clipboard: `<path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/>`,
+  hospital: `<path d="M12 2v20"/><path d="M2 12h20"/><rect x="4" y="4" width="16" height="16" rx="2"/>`,
+  ambulance: `<path d="M10 17h4V5H2v12h3"/><path d="M20 17h2v-4l-2-3h-7v7h2"/><circle cx="7.5" cy="17.5" r="2.5"/><circle cx="17.5" cy="17.5" r="2.5"/><path d="M14 8h2v3h-2z"/><path d="M15 6.5v3"/>`,
+  mechanic: `<path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>`,
+  tow: `<path d="M5 18H3a1 1 0 0 1-1-1V8a1 1 0 0 1 1-1h11v10"/><path d="M14 8h4l4 4v5h-3"/><circle cx="7" cy="18" r="2"/><circle cx="17" cy="18" r="2"/>`,
+  ssm: `<path d="M12 2v20M2 12h20"/><circle cx="12" cy="12" r="9"/>`,
+  fuel: `<path d="M3 22V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v18"/><path d="M3 22h13"/><path d="M16 8h3a2 2 0 0 1 2 2v8a2 2 0 1 1-4 0v-3"/>`,
+  warning: `<path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>`,
   default: `<circle cx="12" cy="12" r="3"/><circle cx="12" cy="12" r="10"/>`,
 };
 
-function createDotMarker(name: string, icon: string | undefined, status: PersonaConnStatus | null): HTMLElement {
-  const svgInner = ICON_SVGS[icon || ""] || ICON_SVGS.default;
-  const opacity = status === "declined" ? "0.5" : "1";
-  let badge = "";
-  if (status === "shortlisted") {
-    badge = `<div style="position:absolute;top:-2px;right:-2px;width:16px;height:16px;border-radius:50%;background:#DC143C;border:2px solid white;display:flex;align-items:center;justify-content:center;">
-      <svg width="8" height="8" viewBox="0 0 24 24" fill="white"><polygon points="12,2 15,9 22,9 17,14 19,21 12,17 5,21 7,14 2,9 9,9"/></svg>
-    </div>`;
-  } else if (status === "pending") {
-    badge = `<div style="position:absolute;top:-2px;right:-2px;width:16px;height:16px;border-radius:50%;background:#D97706;border:2px solid white;display:flex;align-items:center;justify-content:center;">
-      <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-    </div>`;
-  } else if (status === "accepted") {
-    badge = `<div style="position:absolute;top:-2px;right:-2px;width:16px;height:16px;border-radius:50%;background:#16A34A;border:2px solid white;display:flex;align-items:center;justify-content:center;">
-      <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-    </div>`;
-  }
+function dotColorFor(dot: RedDot, view: RedDotsView): string {
+  // Both views render crimson dots in this prototype.
+  // (Grey dots are reserved for future citizen-reported hazards.)
+  return view === "accidents" ? RED : RED;
+}
+
+function createDotMarker(dot: RedDot, view: RedDotsView, isUserNearest: boolean): HTMLElement {
+  const iconKey = dot.kind === "hotspot" ? "warning" : (dot.iconKey || dot.category || "default");
+  const svgInner = ICON_SVGS[iconKey] || ICON_SVGS.default;
+  const fill = dotColorFor(dot, view);
   const el = document.createElement("div");
-  el.innerHTML = `<div style="position:relative;cursor:pointer;opacity:${opacity};">
-    <div style="width:44px;height:44px;border-radius:50%;background:${BLUE};display:flex;align-items:center;justify-content:center;border:2.5px solid white;">
+  el.innerHTML = `<div style="position:relative;cursor:pointer;">
+    <div style="width:44px;height:44px;border-radius:50%;background:${fill};display:flex;align-items:center;justify-content:center;border:2.5px solid white;box-shadow:0 2px 10px rgba(0,0,0,0.18);">
       <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
         ${svgInner}
       </svg>
     </div>
-    ${badge}
   </div>`;
   return el.firstElementChild as HTMLElement;
 }
 
-const PersonaMap = ({ profile, filters, dots, filteredDots, activeFilters, onFiltersChange, entityLabel, isSeeker }: Props) => {
+const PersonaMap = ({ profile, activeView, dots, filteredDots, activeFilters, onFiltersChange }: Props) => {
   const { ready: mapsReady, error: mapsError } = useGoogleMaps();
-  const { getConnectionStatus, allConnections } = usePersonaConnections(profile.phone);
   const mapRef = useRef<HTMLDivElement>(null);
   const mapInstance = useRef<any>(null);
   const markersRef = useRef<any[]>([]);
   const [mapReady, setMapReady] = useState(false);
-  const [selectedDot, setSelectedDot] = useState<Dot | null>(null);
+  const [selectedDot, setSelectedDot] = useState<RedDot | null>(null);
   const [dotScreenPos, setDotScreenPos] = useState<{ x: number; y: number } | null>(null);
 
   useEffect(() => {
@@ -127,27 +103,22 @@ const PersonaMap = ({ profile, filters, dots, filteredDots, activeFilters, onFil
     markersRef.current = [];
 
     filteredDots.forEach((dot) => {
-      const status = getConnectionStatus(dot.id);
-      const content = createDotMarker(dot.name, dot.icon, status);
+      const content = createDotMarker(dot, activeView, false);
       const marker = new g.maps.marker.AdvancedMarkerElement({
         map,
         position: { lat: dot.lat, lng: dot.lng },
         content,
       });
-      content.addEventListener("click", (e) => {
-        e.stopPropagation();
+      const open = () => {
         const rect = content.getBoundingClientRect();
         setDotScreenPos({ x: rect.left + rect.width / 2, y: rect.top });
         setSelectedDot(dot);
-      });
-      marker.addEventListener("gmp-click", () => {
-        const rect = content.getBoundingClientRect();
-        setDotScreenPos({ x: rect.left + rect.width / 2, y: rect.top });
-        setSelectedDot(dot);
-      });
+      };
+      content.addEventListener("click", (e) => { e.stopPropagation(); open(); });
+      marker.addEventListener("gmp-click", open);
       markersRef.current.push(marker);
     });
-  }, [filteredDots, mapReady, allConnections]);
+  }, [filteredDots, mapReady, activeView]);
 
   const handleZoomIn = () => { const m = mapInstance.current; if (m) m.setZoom((m.getZoom() || 12) + 1); };
   const handleZoomOut = () => { const m = mapInstance.current; if (m) m.setZoom((m.getZoom() || 12) - 1); };
@@ -156,28 +127,29 @@ const PersonaMap = ({ profile, filters, dots, filteredDots, activeFilters, onFil
     if (m) { m.setCenter({ lat: profile.lat, lng: profile.lng }); m.setZoom(12); }
   };
 
+  const accent = activeView === "accidents" ? GREY : RED;
+
   return (
     <>
       <div ref={mapRef} className="w-full h-full" />
 
       <PersonaFilterTerminal
-        persona={profile.persona}
-        initialFilters={activeFilters}
+        activeView={activeView}
+        activeFilters={activeFilters}
         onFiltersChange={onFiltersChange}
         visibleCount={filteredDots.length}
         totalCount={dots.length}
-        entityLabel={entityLabel}
       />
 
       {filteredDots.length === 0 && dots.length > 0 && (
         <div className="absolute inset-0 z-[600] flex items-center justify-center pointer-events-none">
           <div className="bg-background/95 backdrop-blur-md rounded-2xl border border-border p-6 text-center shadow-lg pointer-events-auto max-w-xs">
-            <p className="text-sm font-medium text-foreground mb-1">No matches found</p>
-            <p className="text-xs text-muted-foreground mb-3">Try changing your filters.</p>
+            <p className="text-sm font-medium text-foreground mb-1">No Red Dots match your filters</p>
+            <p className="text-xs text-muted-foreground mb-3">Try changing the filter or search.</p>
             <button
               onClick={() => onFiltersChange({})}
               className="text-xs font-semibold text-white px-4 py-2 rounded-lg"
-              style={{ background: BLUE }}
+              style={{ background: accent }}
             >
               Clear all filters
             </button>
@@ -194,7 +166,12 @@ const PersonaMap = ({ profile, filters, dots, filteredDots, activeFilters, onFil
       <ZoomControls onZoomIn={handleZoomIn} onZoomOut={handleZoomOut} onReset={handleReset} />
 
       {selectedDot && (
-        <DotCardPanel dot={selectedDot} isSeeker={isSeeker} profile={profile} anchorPos={dotScreenPos} onClose={() => { setSelectedDot(null); setDotScreenPos(null); }} />
+        <DotCardPanel
+          dot={selectedDot}
+          activeView={activeView}
+          anchorPos={dotScreenPos}
+          onClose={() => { setSelectedDot(null); setDotScreenPos(null); }}
+        />
       )}
     </>
   );
