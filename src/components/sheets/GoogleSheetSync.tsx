@@ -184,7 +184,7 @@ export default function GoogleSheetSync({ mode, onSyncComplete }: { mode: DotMod
   return (
     <div className="bg-card border border-border rounded-xl p-4 sm:p-5 space-y-4">
       <div className="flex items-center gap-2">
-        <Sheet size={16} style={{ color: YELLOW }} />
+        <Sheet size={16} style={{ color: RED }} />
         <h3 className="text-sm font-semibold text-foreground">Google Sheets Sync</h3>
         <span className="text-[10px] px-2 py-0.5 rounded-full bg-muted text-muted-foreground font-medium">
           {mode === "student" ? "Seeker" : "Tutor"} Dots
@@ -208,7 +208,7 @@ export default function GoogleSheetSync({ mode, onSyncComplete }: { mode: DotMod
           onClick={handleLink}
           disabled={linking}
           className="flex items-center gap-1.5 text-sm font-medium px-4 py-2 rounded-lg text-white transition-colors disabled:opacity-50"
-          style={{ background: YELLOW }}
+          style={{ background: RED }}
         >
           <Link2 size={14} /> {linking ? "Linking..." : "Link Sheet"}
         </button>
