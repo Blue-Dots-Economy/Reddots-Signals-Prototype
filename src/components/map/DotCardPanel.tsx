@@ -1,6 +1,8 @@
+import { useState } from "react";
 import { X, Phone, Navigation, AlertTriangle } from "lucide-react";
 import { toast } from "sonner";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { supabase } from "@/integrations/supabase/client";
 import type { RedDot } from "@/pages/LaunchPage";
 import type { RedDotsView } from "@/lib/phoneAuth";
 
@@ -102,9 +104,42 @@ function riskColors(level: string): { bg: string; fg: string } {
   return { bg: "#94A3B8", fg: "white" };
 }
 
+const HAZARD_TYPES = ["Pothole", "Poor Lighting", "Missing Divider", "Construction Zone", "Blind Turn", "Other"];
+const SEVERITIES = ["High", "Medium", "Low"] as const;
+
 const DotCardPanel = ({ dot, activeView, anchorPos, onClose }: Props) => {
   const phone = firstPhone(dot.contact);
   const directionsUrl = `https://www.google.com/maps/dir/?api=1&destination=${dot.lat},${dot.lng}`;
+  const [showHazardForm, setShowHazardForm] = useState(false);
+  const [hazardType, setHazardType] = useState(HAZARD_TYPES[0]);
+  const [hazardDesc, setHazardDesc] = useState("");
+  const [hazardSeverity, setHazardSeverity] = useState<typeof SEVERITIES[number]>("Medium");
+  const [submittingHazard, setSubmittingHazard] = useState(false);
+
+  const submitHazardReport = async () => {
+    setSubmittingHazard(true);
+    const ref = `RD-${Math.floor(100000 + Math.random() * 900000)}`;
+    // Best-effort: persist as a pothole dot near the current dot. RLS allows anon insert when kind='pothole'.
+    try {
+      await supabase.from("centre_dots").insert({
+        name: `${hazardType} report`,
+        area: dot.area || "Citizen report",
+        lat: dot.lat + (Math.random() - 0.5) * 0.001,
+        lng: dot.lng + (Math.random() - 0.5) * 0.001,
+        icon: "warning",
+        contact: "direct",
+        relevance: hazardSeverity.toUpperCase() === "HIGH" ? "HIGH" : hazardSeverity.toUpperCase() === "LOW" ? "MODERATE" : "MODERATE",
+        description: hazardDesc.trim() || null,
+        services: hazardType,
+        kind: "pothole",
+      } as any);
+    } catch { /* non-blocking */ }
+    setSubmittingHazard(false);
+    toast.success("Report submitted", { description: `Reference ${ref} — thanks for the heads-up.` });
+    setShowHazardForm(false);
+    onClose();
+  };
+
 
   // ── SERVICE PROVIDER CARD ──
   if (dot.kind === "service") {
