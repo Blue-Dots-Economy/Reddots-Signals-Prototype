@@ -1,0 +1,324 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Design system for Blue Dots */
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222 47% 11%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 222 47% 11%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 47% 11%;
+
+    --primary: 222 47% 11%;
+    --primary-foreground: 210 40% 98%;
+
+    --secondary: 210 40% 96%;
+    --secondary-foreground: 222 47% 11%;
+
+    --muted: 210 40% 96%;
+    --muted-foreground: 215 16% 47%;
+
+    --accent: 210 40% 96%;
+    --accent-foreground: 222 47% 11%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 214 32% 91%;
+    --input: 214 32% 91%;
+    --ring: 222 84% 5%;
+
+    --radius: 0.75rem;
+
+    /* Map-specific tokens */
+    --map-panel: 222 47% 11%;
+    --map-panel-foreground: 210 40% 98%;
+    --map-yellow: 217 91% 53%;
+    --map-yellow-bright: 217 91% 60%;
+
+    /* Pillar colors — all Blue Dots themed */
+    --pillar-subject-tutoring: 217 91% 53%;
+    --pillar-career-counselling: 217 91% 53%;
+    --pillar-college-admissions: 217 91% 53%;
+    --pillar-skill-workshop: 217 91% 53%;
+    --pillar-exam-prep: 217 91% 53%;
+
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 240 5.3% 26.1%;
+    --sidebar-primary: 240 5.9% 10%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 240 4.8% 95.9%;
+    --sidebar-accent-foreground: 240 5.9% 10%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+
+  .dark {
+    --background: 222 84% 5%;
+    --foreground: 210 40% 98%;
+    --card: 222 84% 5%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222 84% 5%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 210 40% 98%;
+    --primary-foreground: 222 47% 11%;
+    --secondary: 217 33% 18%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217 33% 18%;
+    --muted-foreground: 215 20% 65%;
+    --accent: 217 33% 18%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 63% 31%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 217 33% 18%;
+    --input: 217 33% 18%;
+    --ring: 213 27% 84%;
+    --sidebar-background: 240 5.9% 10%;
+    --sidebar-foreground: 240 4.8% 95.9%;
+    --sidebar-primary: 224.3 76.3% 48%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 240 3.7% 15.9%;
+    --sidebar-accent-foreground: 240 4.8% 95.9%;
+    --sidebar-border: 240 3.7% 15.9%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  html {
+    font-family: 'Geist', ui-sans-serif, system-ui, -apple-system, sans-serif;
+    font-feature-settings: "cv11", "ss01", "ss03";
+  }
+  body {
+    @apply bg-background text-foreground;
+    margin: 0;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    letter-spacing: -0.005em;
+    overscroll-behavior: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+  button, a, [role="button"], input, select, textarea {
+    touch-action: manipulation;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    letter-spacing: -0.02em;
+    font-weight: 600;
+  }
+}
+
+@layer utilities {
+  /* Dynamic viewport height — accounts for mobile browser chrome */
+  .h-screen-dvh { height: 100dvh; }
+  .min-h-screen-dvh { min-height: 100dvh; }
+  .max-h-screen-dvh { max-height: 100dvh; }
+
+  /* Safe-area inset utilities for notch / home-indicator */
+  .safe-pt { padding-top: env(safe-area-inset-top); }
+  .safe-pb { padding-bottom: env(safe-area-inset-bottom); }
+  .safe-px { padding-left: env(safe-area-inset-left); padding-right: env(safe-area-inset-right); }
+  .safe-top-0 { top: env(safe-area-inset-top); }
+  .safe-bottom-0 { bottom: env(safe-area-inset-bottom); }
+
+  /* Hide scrollbar while keeping scrollability (used for chip rows) */
+  .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+  .no-scrollbar::-webkit-scrollbar { display: none; }
+
+  /* Minimum 44×44 touch target (Apple HIG / Material) */
+  .tap-44 { min-height: 44px; min-width: 44px; }
+}
+
+@layer utilities {
+  .animate-fade-in {
+    animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .animate-slide-up {
+    animation: slideUp 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .animate-scale-in {
+    animation: scaleIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .animate-slide-in-right {
+    animation: slideInRight 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .animate-float {
+    animation: float 3s ease-in-out infinite;
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.92); }
+  to { opacity: 1; transform: scale(1); }
+}
+@keyframes slideInRight {
+  from { opacity: 0; transform: translateX(20px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@layer components {
+  .map-dot {
+    @apply rounded-full flex items-center justify-center shadow-lg cursor-pointer transition-transform duration-200;
+    width: 44px;
+    height: 44px;
+  }
+  .map-dot:hover {
+    transform: scale(1.15);
+  }
+  .map-dot-yellow {
+    background-color: #2563EB;
+  }
+  .map-badge {
+    @apply absolute -top-1 -right-1 rounded-full flex items-center justify-center text-xs font-bold;
+    background-color: hsl(var(--destructive));
+    color: hsl(var(--destructive-foreground));
+    min-width: 20px;
+    height: 20px;
+    padding: 0 4px;
+  }
+  .map-panel {
+    background-color: hsl(var(--map-panel));
+    color: hsl(var(--map-panel-foreground));
+    @apply rounded-2xl shadow-2xl border border-white/10;
+    backdrop-filter: blur(16px) saturate(180%);
+  }
+  .hover-card-map {
+    @apply bg-card rounded-2xl shadow-xl p-4;
+    width: 260px;
+    border: 1px solid hsl(var(--border));
+  }
+  .pillar-pill {
+    @apply px-2.5 py-0.5 rounded-full text-xs font-medium cursor-pointer transition-all duration-200;
+  }
+  .pillar-subject_tutoring { background-color: #2563EB; color: white; }
+  .pillar-career_counselling { background-color: #1D4ED8; color: white; }
+  .pillar-college_admissions { background-color: #1E40AF; color: white; }
+  .pillar-skill_workshop { background-color: #2554C7; color: white; }
+  .pillar-exam_prep { background-color: #1E3A8A; color: white; }
+
+  /* Glassmorphic compact card */
+  .outreach-card {
+    @apply rounded-xl p-3 space-y-2 transition-all duration-300;
+    background: hsl(var(--card) / 0.65);
+    backdrop-filter: blur(18px) saturate(180%);
+    -webkit-backdrop-filter: blur(18px) saturate(180%);
+    border: 1px solid hsl(var(--border) / 0.6);
+    box-shadow: 0 1px 2px rgba(15,23,42,0.04), 0 8px 24px -12px rgba(15,23,42,0.08), inset 0 1px 0 rgba(255,255,255,0.4);
+  }
+  .outreach-card:hover {
+    background: hsl(var(--card) / 0.8);
+    border-color: hsl(var(--border));
+    box-shadow: 0 2px 6px rgba(15,23,42,0.05), 0 12px 32px -10px rgba(15,23,42,0.12), inset 0 1px 0 rgba(255,255,255,0.5);
+    transform: translateY(-1px);
+  }
+
+  /* Floating island nav */
+  .floating-nav {
+    @apply flex items-center gap-1 rounded-full border border-border px-1.5 py-1.5;
+    background: hsl(var(--card) / 0.92);
+    backdrop-filter: blur(20px) saturate(180%);
+    box-shadow: 0 4px 30px rgba(0,0,0,0.1), 0 1px 4px rgba(0,0,0,0.05), inset 0 1px 0 rgba(255,255,255,0.08);
+  }
+
+  /* Stat card */
+  .stat-card {
+    @apply rounded-2xl p-5 bg-card border border-border transition-all duration-300;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 4px 16px rgba(0,0,0,0.03);
+  }
+  .stat-card:hover {
+    box-shadow: 0 4px 12px rgba(0,0,0,0.07), 0 8px 28px rgba(0,0,0,0.05);
+    transform: translateY(-2px);
+  }
+
+  @keyframes pulse-ring {
+    0% { transform: scale(1); opacity: 0.6; }
+    100% { transform: scale(1.8); opacity: 0; }
+  }
+  .dot-pulse::before {
+    content: '';
+    @apply absolute rounded-full;
+    inset: -4px;
+    animation: pulse-ring 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+  .dot-pulse-yellow::before {
+    background-color: rgba(37, 99, 235, 0.4);
+  }
+
+  /* Brand shimmer loader */
+  .brand-loader {
+    background: linear-gradient(
+      90deg,
+      hsl(var(--muted)) 25%,
+      hsl(var(--border)) 50%,
+      hsl(var(--muted)) 75%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 1.5s ease-in-out infinite;
+  }
+
+  /* Glass morphism utility */
+  .glass {
+    background: hsl(var(--card) / 0.7);
+    backdrop-filter: blur(16px) saturate(180%);
+    border: 1px solid hsl(var(--border) / 0.5);
+  }
+
+  /* Smooth input focus ring */
+  .input-focus-ring {
+    @apply transition-all duration-200;
+    box-shadow: 0 0 0 0 transparent;
+  }
+  .input-focus-ring:focus {
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+    border-color: #2563EB;
+  }
+
+  /* Tab nudge bounce */
+  @keyframes tab-nudge-bounce {
+    0% { transform: scale(1); }
+    40% { transform: scale(1.15); }
+    100% { transform: scale(1); }
+  }
+  .tab-nudge-bounce {
+    animation: tab-nudge-bounce 400ms ease-out 1;
+  }
+
+  /* Tab nudge ripple */
+  @keyframes tab-nudge-ripple {
+    0% { transform: scale(0.8); opacity: 0.6; }
+    100% { transform: scale(2.2); opacity: 0; }
+  }
+  .tab-nudge-ripple::after {
+    content: '';
+    position: absolute;
+    inset: -4px;
+    border-radius: 9999px;
+    background: rgba(37, 99, 235, 0.35);
+    animation: tab-nudge-ripple 600ms ease-out 1 forwards;
+    pointer-events: none;
+  }
+}

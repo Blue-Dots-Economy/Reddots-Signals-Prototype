@@ -1,0 +1,1 @@
+ALTER TABLE public.tutor_dots ADD COLUMN IF NOT EXISTS contact text NOT NULL DEFAULT 'direct'::text;
