@@ -187,12 +187,12 @@ export default function GoogleSheetSync({ mode, onSyncComplete }: { mode: DotMod
         <Sheet size={16} style={{ color: RED }} />
         <h3 className="text-sm font-semibold text-foreground">Google Sheets Sync</h3>
         <span className="text-[10px] px-2 py-0.5 rounded-full bg-muted text-muted-foreground font-medium">
-          {mode === "student" ? "Seeker" : "Tutor"} Dots
+          {MODE_META[mode].label}
         </span>
       </div>
 
-      <p className="text-xs text-muted-foreground">
-        Link a Google Sheet to auto-sync {mode} dots. Shared tutor sheets can use flexible headers like <strong>name</strong>/<strong>rep_name</strong>, <strong>email</strong>/<strong>rep_email</strong>, <strong>area</strong>/<strong>pincode</strong>, plus optional lat/lng.
+      <p className="text-xs text-muted-foreground leading-relaxed">
+        {MODE_META[mode].helper}
       </p>
 
       {/* Link new sheet */}
