@@ -40,31 +40,43 @@ function normalizeInput(phone: string): string {
 }
 
 /**
- * Look up a Red Dots user by phone in `student_dots`. Any registered phone works
- * — the Services / Accidents view is chosen later via the ChatRouting screen.
+ * Look up a Red Dots user by phone. Any valid 10-digit number works — if the
+ * phone is registered in `student_dots` we hydrate from that row, otherwise we
+ * create a guest profile centred on Guwahati. The Services / Accidents view is
+ * chosen later via the ChatRouting screen.
  */
 export async function lookupUser(phone: string): Promise<UserProfile | null> {
   const normalized = normalizeInput(phone);
   if (normalized.length !== 10) return null;
 
   const { data } = await supabase.from("student_dots").select("*");
-  if (!data) return null;
-
-  for (const row of data) {
-    const phones = extractPhoneNumbers(row.contact || "");
-    if (phones.includes(normalized)) {
-      return {
-        persona: "red_dots_user",
-        name: row.name,
-        phone: normalized,
-        lat: row.lat ?? GUWAHATI_FALLBACK.lat,
-        lng: row.lng ?? GUWAHATI_FALLBACK.lng,
-        area: row.area ?? GUWAHATI_FALLBACK.area,
-        rowData: row,
-      };
+  if (data) {
+    for (const row of data) {
+      const phones = extractPhoneNumbers(row.contact || "");
+      if (phones.includes(normalized)) {
+        return {
+          persona: "red_dots_user",
+          name: row.name,
+          phone: normalized,
+          lat: row.lat ?? GUWAHATI_FALLBACK.lat,
+          lng: row.lng ?? GUWAHATI_FALLBACK.lng,
+          area: row.area ?? GUWAHATI_FALLBACK.area,
+          rowData: row,
+        };
+      }
     }
   }
-  return null;
+
+  // Guest fallback — any 10-digit phone is allowed in.
+  return {
+    persona: "red_dots_user",
+    name: `User ${normalized.slice(-4)}`,
+    phone: normalized,
+    lat: GUWAHATI_FALLBACK.lat,
+    lng: GUWAHATI_FALLBACK.lng,
+    area: GUWAHATI_FALLBACK.area,
+    rowData: {},
+  };
 }
 
 export function saveProfile(profile: UserProfile) {
