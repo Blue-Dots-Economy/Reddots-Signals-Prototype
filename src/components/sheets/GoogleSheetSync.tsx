@@ -139,7 +139,7 @@ export default function GoogleSheetSync({ mode, onSyncComplete }: { mode: DotMod
       } else {
         const syncResult = result.results?.[0];
         if (syncResult?.status === "success") {
-          toast.success(`Synced ${syncResult.count} ${mode} dots from sheet`);
+          toast.success(`Synced ${syncResult.count} ${MODE_META[mode].label.toLowerCase()} from sheet`);
         } else {
           toast.error(syncResult?.error || "Sync failed");
         }
