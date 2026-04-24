@@ -119,6 +119,45 @@ const AdminDashboard = () => {
     [hotspots]
   );
 
+  // Risk distribution by area (stacked bar) — top 8 areas by hotspot count
+  const riskByArea = useMemo(() => {
+    const map: Record<string, { area: string; CRITICAL: number; HIGH: number; MODERATE: number; total: number }> = {};
+    hotspots.forEach((h) => {
+      const area = (h.area || "Unknown").trim() || "Unknown";
+      const risk = (h.relevance || "").toUpperCase();
+      if (!map[area]) map[area] = { area, CRITICAL: 0, HIGH: 0, MODERATE: 0, total: 0 };
+      if (risk === "CRITICAL" || risk === "HIGH" || risk === "MODERATE") {
+        map[area][risk] += 1;
+        map[area].total += 1;
+      }
+    });
+    return Object.values(map).sort((a, b) => b.total - a.total).slice(0, 8);
+  }, [hotspots]);
+
+  // Top 10 deadliest hotspots (horizontal bar)
+  const topFatalHotspots = useMemo(() => {
+    return hotspots
+      .map((h) => ({
+        name: h.name?.length > 22 ? h.name.slice(0, 20) + "…" : h.name || "—",
+        deaths: parseInt((h.job_role_salary || "0").replace(/[^\d]/g, "")) || 0,
+        accidents: parseInt((h.openings || "0").replace(/[^\d]/g, "")) || 0,
+      }))
+      .filter((h) => h.deaths > 0 || h.accidents > 0)
+      .sort((a, b) => b.deaths - a.deaths)
+      .slice(0, 10);
+  }, [hotspots]);
+
+  // Services distribution donut by category
+  const servicesByCategory = useMemo(() => {
+    return Object.keys(CATEGORY_META)
+      .map((key) => ({
+        name: CATEGORY_META[key].label,
+        value: serviceCategoryCounts[key] || 0,
+        color: CATEGORY_META[key].color,
+      }))
+      .filter((d) => d.value > 0);
+  }, [serviceCategoryCounts]);
+
   return (
     <div className="min-h-screen bg-background">
       <header className="border-b border-border bg-card/80 backdrop-blur-md sticky top-0 z-10" style={{ boxShadow: "0 1px 4px rgba(0,0,0,0.03)" }}>
