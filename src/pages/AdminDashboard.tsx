@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { LogOut, Users, Phone, Filter, TrendingUp, Search, ChevronDown, ChevronUp, Trash2, CircleDot, BarChart3, CheckCircle2, XCircle, Eye, MessageSquare } from "lucide-react";
-import TutorDataTable from "@/components/admin/TutorDataTable";
+
 import StudentDataTable from "@/components/admin/StudentDataTable";
 import { toast } from "sonner";
 import { buildNameMaps, resolveName } from "@/lib/resolveNames";
@@ -301,7 +301,7 @@ const PersonaPanel = ({ persona, label }: { persona: string; label: string }) =>
         </div>
       </div>
 
-      {persona === "tutor" && <TutorDataTable />}
+      
     </main>
   );
 };
