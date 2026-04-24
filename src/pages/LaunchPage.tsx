@@ -1,51 +1,64 @@
 import { useState, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { loadProfile, clearProfile, type UserProfile } from "@/lib/phoneAuth";
-import PersonaChat, { type ChatFilters } from "@/components/chat/PersonaChat";
-import PersonaMap from "@/components/map/PersonaMap";
-import PersonaNavIsland, { type PersonaView } from "@/components/map/PersonaNavIsland";
-import PersonaListView from "@/components/map/PersonaListView";
-import PersonaConnections from "@/components/map/PersonaConnections";
-import ListFilterBar from "@/components/map/ListFilterBar";
+import { LogOut } from "lucide-react";
+import { loadProfile, clearProfile, setProfileView, type UserProfile, type RedDotsView } from "@/lib/phoneAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { haversineKm } from "@/lib/distance";
-import { usePersonaConnections } from "@/hooks/usePersonaConnections";
-import { LogOut } from "lucide-react";
+import ChatRouting from "@/components/ChatRouting";
+import PersonaMap from "@/components/map/PersonaMap";
+import PersonaListView from "@/components/map/PersonaListView";
+import PersonaNavIsland, { type ViewMode } from "@/components/map/PersonaNavIsland";
 
-interface Dot {
+export interface RedDotFilters {
+  // Services
+  category?: string[];        // hospital, ambulance, mechanic, tow, ssm, fuel
+  type?: string[];            // Government, Private, Volunteer
+  open24x7?: boolean;
+  // Accidents
+  risk?: string[];            // CRITICAL, HIGH, MODERATE
+  roadClass?: string[];       // National Highway, State Highway, etc.
+  // Shared
+  distance?: number;
+  search?: string;
+}
+
+export interface RedDot {
   id: string;
   name: string;
   area: string;
   lat: number;
   lng: number;
-  nature_of_job?: string;
-  school_iti?: string;
-  jobs_interested_nature?: string;
-  hiring_manager_name?: string;
   contact?: string;
-  job_role_salary?: string;
-  [key: string]: any;
-}
-
-function isInternshipRow(row: Dot): boolean {
-  const nj = (row.nature_of_job || "").toLowerCase().trim();
-  return nj === "internship" || nj === "internships" || nj.includes("intern");
-}
-
-function isITIRow(row: Dot): boolean {
-  const si = (row.school_iti || "").toLowerCase();
-  return si.includes("iti") || si.includes("industrial training");
+  description?: string | null;
+  // Service fields (sourced from student_dots)
+  category?: string;          // hospital | ambulance | mechanic | tow | ssm | fuel
+  type?: string;              // Government | Private | Volunteer
+  availability?: string;      // 24x7 | Day-time
+  speciality?: string;
+  costRange?: string;
+  goldenHour?: string;
+  // Accident fields (sourced from centre_dots)
+  totalAccidents?: string;
+  deaths?: string;
+  injured?: string;
+  fatalityRate?: string;
+  riskLevel?: string;         // CRITICAL | HIGH | MODERATE
+  roadClass?: string;
+  topCollision?: string;
+  // What kind of dot this is
+  kind: "service" | "hotspot";
+  iconKey?: string;
+  raw: Record<string, any>;
 }
 
 const LaunchPage = () => {
   const navigate = useNavigate();
   const [profile, setProfile] = useState<UserProfile | null>(() => loadProfile());
-  const [chatComplete, setChatComplete] = useState(false);
-  const [filters, setFilters] = useState<ChatFilters>({});
-  const [chatFlowEnabled, setChatFlowEnabled] = useState<boolean | null>(null);
-  const [activeView, setActiveView] = useState<PersonaView>("map");
-  const [activeFilters, setActiveFilters] = useState<ChatFilters>({});
-  const [dots, setDots] = useState<Dot[]>([]);
+  const [activeView, setActiveView] = useState<RedDotsView | null>(() => loadProfile()?.view ?? null);
+  const [viewMode, setViewMode] = useState<ViewMode>("map");
+  const [activeFilters, setActiveFilters] = useState<RedDotFilters>({});
+  const [services, setServices] = useState<RedDot[]>([]);
+  const [hotspots, setHotspots] = useState<RedDot[]>([]);
 
   useEffect(() => {
     const p = loadProfile();
@@ -53,124 +66,169 @@ const LaunchPage = () => {
       navigate("/", { replace: true });
       return;
     }
-
     setProfile(p);
-
-    let isActive = true;
-
-    const loadAppSettings = async () => {
-      try {
-        const { data } = await supabase
-          .from("app_settings")
-          .select("value")
-          .eq("key", "chat_flow_enabled")
-          .single();
-
-        if (!isActive) return;
-
-        const enabled = data?.value === "true";
-        setChatFlowEnabled(enabled);
-        if (!enabled) {
-          setChatComplete(true);
-        }
-      } catch {
-        if (!isActive) return;
-
-        setChatFlowEnabled(false);
-        setChatComplete(true);
-      }
-    };
-
-    loadAppSettings();
-
-    return () => {
-      isActive = false;
-    };
+    setActiveView(p.view ?? null);
   }, [navigate]);
 
-  // Fetch dots based on persona
+  // Fetch service providers from student_dots
   useEffect(() => {
     if (!profile) return;
-    const isSeeker = profile.persona === "school_student" || profile.persona === "iti_student";
+    let alive = true;
 
-    const fetchDots = async () => {
-      if (isSeeker) {
-        const { data } = await supabase.from("centre_dots").select("*");
-        if (!data) return;
-        let filtered = data as Dot[];
-        if (profile.persona === "school_student") {
-          filtered = filtered.filter(isInternshipRow);
-        } else {
-          filtered = filtered.filter((d) => !isInternshipRow(d));
-        }
-        setDots(filtered.map(d => ({ ...d, icon: "briefcase" as const })));
-      } else {
-        const { data } = await supabase.from("student_dots").select("*");
-        if (!data) return;
-        let filtered = data as Dot[];
-        if (profile.persona === "msme_hiring_interns") {
-          filtered = filtered.filter((d) => !isITIRow(d));
-        } else {
-          filtered = filtered.filter(isITIRow);
-        }
-        setDots(filtered);
-      }
+    (async () => {
+      const { data: services } = await supabase.from("student_dots").select("*");
+      if (!alive || !services) return;
+      setServices(
+        services.map((r: any): RedDot => ({
+          id: r.id,
+          name: r.name,
+          area: r.area,
+          lat: r.lat,
+          lng: r.lng,
+          contact: r.contact,
+          description: r.description,
+          category: r.category || r.icon || "hospital",
+          type: r.pillar || "Private",
+          availability: r.availability,
+          speciality: r.skills,
+          costRange: r.needs,
+          goldenHour: r.other_help,
+          kind: "service",
+          iconKey: r.icon,
+          raw: r,
+        }))
+      );
+    })();
+
+    (async () => {
+      const { data: hotspots } = await supabase.from("centre_dots").select("*");
+      if (!alive || !hotspots) return;
+      setHotspots(
+        hotspots.map((r: any): RedDot => ({
+          id: r.id,
+          name: r.name,
+          area: r.area,
+          lat: r.lat,
+          lng: r.lng,
+          contact: r.contact,
+          description: r.description,
+          totalAccidents: r.openings,
+          deaths: r.job_role_salary,
+          injured: r.work_experience_years,
+          fatalityRate: r.rating,
+          riskLevel: r.relevance,
+          roadClass: r.nature_of_job,
+          topCollision: r.services,
+          kind: "hotspot",
+          iconKey: "warning",
+          raw: r,
+        }))
+      );
+    })();
+
+    // Realtime
+    const channel = supabase
+      .channel("red_dots_data")
+      .on("postgres_changes", { event: "*", schema: "public", table: "student_dots" }, () => {
+        supabase.from("student_dots").select("*").then(({ data }) => {
+          if (!alive || !data) return;
+          setServices(
+            data.map((r: any): RedDot => ({
+              id: r.id, name: r.name, area: r.area, lat: r.lat, lng: r.lng,
+              contact: r.contact, description: r.description,
+              category: r.category || r.icon || "hospital", type: r.pillar || "Private",
+              availability: r.availability, speciality: r.skills,
+              costRange: r.needs, goldenHour: r.other_help,
+              kind: "service", iconKey: r.icon, raw: r,
+            }))
+          );
+        });
+      })
+      .on("postgres_changes", { event: "*", schema: "public", table: "centre_dots" }, () => {
+        supabase.from("centre_dots").select("*").then(({ data }) => {
+          if (!alive || !data) return;
+          setHotspots(
+            data.map((r: any): RedDot => ({
+              id: r.id, name: r.name, area: r.area, lat: r.lat, lng: r.lng,
+              contact: r.contact, description: r.description,
+              totalAccidents: r.openings, deaths: r.job_role_salary,
+              injured: r.work_experience_years, fatalityRate: r.rating,
+              riskLevel: r.relevance, roadClass: r.nature_of_job, topCollision: r.services,
+              kind: "hotspot", iconKey: "warning", raw: r,
+            }))
+          );
+        });
+      })
+      .subscribe();
+
+    return () => {
+      alive = false;
+      supabase.removeChannel(channel);
     };
-    fetchDots();
-  }, [profile?.persona]);
+  }, [profile?.phone]);
 
-  const handleChatComplete = (f: ChatFilters) => {
-    setFilters(f);
-    setActiveFilters(f);
-    setChatComplete(true);
+  const handleChooseView = (v: RedDotsView) => {
+    setActiveView(v);
+    setProfileView(v);
+    setActiveFilters({});
   };
 
-  const isSeeker = profile ? (profile.persona === "school_student" || profile.persona === "iti_student") : true;
-  const entityLabel = isSeeker ? "Employers" : "Students";
+  const handleSwitchView = (v: RedDotsView) => {
+    setActiveView(v);
+    setProfileView(v);
+    setActiveFilters({});
+  };
+
+  const dots: RedDot[] = activeView === "accidents" ? hotspots : services;
 
   const filteredDots = useMemo(() => {
-    return dots.filter((dot) => {
+    if (!profile) return dots;
+    return dots.filter((d) => {
       if (activeFilters.distance) {
-        if (!profile) return true;
-        const dist = haversineKm(profile.lat, profile.lng, dot.lat, dot.lng);
+        const dist = haversineKm(profile.lat, profile.lng, d.lat, d.lng);
         if (dist > activeFilters.distance) return false;
       }
-      if (activeFilters.sector && activeFilters.sector.length > 0) {
-        if (isSeeker) {
-          const jobType = (dot.nature_of_job || "").toLowerCase();
-          const matched = activeFilters.sector.some((s) => jobType.includes(s.toLowerCase()));
-          if (!matched) return false;
-        } else {
-          const interest = (dot.jobs_interested_nature || "").toLowerCase();
-          const matched = activeFilters.sector.some((s) => interest.includes(s.toLowerCase()));
-          if (!matched) return false;
+      if (activeFilters.search && activeFilters.search.trim()) {
+        const q = activeFilters.search.trim().toLowerCase();
+        const hay = `${d.name} ${d.area} ${d.category ?? ""} ${d.speciality ?? ""}`.toLowerCase();
+        if (!hay.includes(q)) return false;
+      }
+      if (d.kind === "service") {
+        if (activeFilters.category && activeFilters.category.length > 0) {
+          if (!activeFilters.category.includes(d.category || "")) return false;
+        }
+        if (activeFilters.type && activeFilters.type.length > 0) {
+          if (!activeFilters.type.includes(d.type || "")) return false;
+        }
+        if (activeFilters.open24x7) {
+          if (!(d.availability || "").toLowerCase().includes("24")) return false;
+        }
+      } else {
+        if (activeFilters.risk && activeFilters.risk.length > 0) {
+          if (!activeFilters.risk.includes((d.riskLevel || "").toUpperCase())) return false;
+        }
+        if (activeFilters.roadClass && activeFilters.roadClass.length > 0) {
+          if (!activeFilters.roadClass.includes(d.roadClass || "")) return false;
         }
       }
       return true;
     });
   }, [dots, activeFilters, profile]);
 
-  if (!profile || chatFlowEnabled === null) {
+  if (!profile) {
     return (
       <div className="flex h-[100dvh] items-center justify-center bg-background safe-px">
         <div className="flex flex-col items-center gap-3 text-center">
           <div className="h-10 w-10 animate-spin rounded-full border-2 border-border border-t-primary" />
-          <p className="text-sm font-medium text-foreground">Loading your map…</p>
+          <p className="text-sm font-medium text-foreground">Loading the map…</p>
         </div>
       </div>
     );
   }
 
-  if (!chatComplete) {
-    return (
-      <div className="h-[100dvh]">
-        <PersonaChat
-          persona={profile.persona}
-          userName={profile.name}
-          onComplete={handleChatComplete}
-        />
-      </div>
-    );
+  // First-time post-login: show the routing question
+  if (!activeView) {
+    return <ChatRouting userName={profile.name} onChoose={handleChooseView} />;
   }
 
   const handleLogout = () => {
@@ -178,13 +236,10 @@ const LaunchPage = () => {
     navigate("/", { replace: true });
   };
 
-  // On list/connections views, show Sign Out inside the header to avoid overlap.
-  // On map view, render as a floating pill (header is absent).
-  const showFloatingSignOut = activeView === "map";
+  const showFloatingSignOut = viewMode === "map";
 
   return (
-    <div className={`relative w-screen h-[100dvh] ${activeView === "map" ? "overflow-hidden" : "overflow-y-auto"}`}>
-      {/* Floating Sign Out — map view only */}
+    <div className={`relative w-screen h-[100dvh] ${viewMode === "map" ? "overflow-hidden" : "overflow-y-auto"}`}>
       {showFloatingSignOut && (
         <button
           onClick={handleLogout}
@@ -193,22 +248,19 @@ const LaunchPage = () => {
           style={{ top: `calc(env(safe-area-inset-top) + 0.75rem)` }}
         >
           <LogOut size={16} />
-          <span className="hidden xs:inline sm:inline">Sign Out</span>
+          <span className="hidden sm:inline">Sign Out</span>
         </button>
       )}
 
-      {/* Fixed top header — list & connections views only */}
-      {activeView === "list" && (
-        <div
-          className="fixed top-0 left-0 right-0 z-[1100] bg-background/95 backdrop-blur-md border-b border-border safe-pt safe-px"
-        >
+      {viewMode === "list" && (
+        <div className="fixed top-0 left-0 right-0 z-[1100] bg-background/95 backdrop-blur-md border-b border-border safe-pt safe-px">
           <div className="h-12 flex items-center justify-between gap-2 px-3 sm:px-4">
             <div className="min-w-0 flex-1">
               <h2 className="text-sm font-bold text-foreground truncate">
-                {isSeeker ? "Provider" : "Seeker"} Directory
+                {activeView === "services" ? "Service Providers" : "Accident Hotspots"}
               </h2>
               <p className="text-[11px] text-muted-foreground truncate">
-                {filteredDots.length} of {dots.length} {entityLabel.toLowerCase()}
+                Showing {filteredDots.length} of {dots.length} Red Dots
               </p>
             </div>
             <button
@@ -222,62 +274,35 @@ const LaunchPage = () => {
           </div>
         </div>
       )}
-      {activeView === "connections" && (
-        <div
-          className="fixed top-0 left-0 right-0 z-[1100] bg-background/90 backdrop-blur-md border-b border-border safe-pt safe-px"
-        >
-          <div className="h-12 flex items-center justify-between gap-2 px-3 sm:px-4">
-            <span className="text-sm font-bold text-foreground truncate">My Connections</span>
-            <button
-              onClick={handleLogout}
-              aria-label="Sign out"
-              className="tap-44 inline-flex items-center justify-center gap-1.5 px-3 rounded-full text-xs font-semibold text-foreground hover:bg-accent transition-colors"
-            >
-              <LogOut size={16} />
-              <span className="hidden sm:inline">Sign Out</span>
-            </button>
-          </div>
-        </div>
-      )}
 
-      <PersonaNavIslandWrapper profile={profile} activeView={activeView} setActiveView={setActiveView} />
+      <PersonaNavIsland
+        activeView={activeView}
+        onSwitchView={handleSwitchView}
+        viewMode={viewMode}
+        onSwitchMode={setViewMode}
+      />
 
-      {activeView === "map" && (
+      {viewMode === "map" ? (
         <PersonaMap
           profile={profile}
-          filters={activeFilters}
+          activeView={activeView}
           dots={dots}
           filteredDots={filteredDots}
           activeFilters={activeFilters}
           onFiltersChange={setActiveFilters}
-          entityLabel={entityLabel}
-          isSeeker={isSeeker}
         />
-      )}
-
-      {activeView === "list" && (
+      ) : (
         <PersonaListView
           profile={profile}
-          filters={activeFilters}
+          activeView={activeView}
           dots={dots}
           filteredDots={filteredDots}
           activeFilters={activeFilters}
           onFiltersChange={setActiveFilters}
-          entityLabel={entityLabel}
-          isSeeker={isSeeker}
         />
-      )}
-
-      {activeView === "connections" && (
-        <PersonaConnections profile={profile} />
       )}
     </div>
   );
-};
-
-const PersonaNavIslandWrapper = ({ profile, activeView, setActiveView }: { profile: UserProfile; activeView: PersonaView; setActiveView: (v: PersonaView) => void }) => {
-  const { pendingReceivedCount } = usePersonaConnections(profile.phone);
-  return <PersonaNavIsland activeView={activeView} onSwitchView={setActiveView} connectionCount={pendingReceivedCount} />;
 };
 
 export default LaunchPage;

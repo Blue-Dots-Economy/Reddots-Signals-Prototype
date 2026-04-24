@@ -10,7 +10,6 @@ import AdminDashboard from "./pages/AdminDashboard";
 import AdminLogin from "./pages/AdminLogin";
 import MetricBreakdown from "./pages/MetricBreakdown";
 import ManageDots from "./pages/ManageDots";
-import TestConnections from "./pages/TestConnections";
 import RequireAuth from "./components/RequireAuth";
 
 const queryClient = new QueryClient();
@@ -22,11 +21,10 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <Routes>
-          {/* Phone-based login */}
-          <Route path="/" element={<AuthPage role="student" />} />
-          <Route path="/provider" element={<AuthPage role="centre" />} />
+          {/* Single phone-based login */}
+          <Route path="/" element={<AuthPage />} />
 
-          {/* Post-login chat + map */}
+          {/* Post-login map + chat routing */}
           <Route path="/home" element={<LaunchPage />} />
 
           {/* Admin */}
@@ -34,9 +32,6 @@ const App = () => (
           <Route path="/admin" element={<RequireAuth loginPath="/admin-login"><AdminDashboard /></RequireAuth>} />
           <Route path="/admin/metric" element={<RequireAuth loginPath="/admin-login"><MetricBreakdown /></RequireAuth>} />
           <Route path="/admin/manage-dots" element={<RequireAuth loginPath="/admin-login"><ManageDots /></RequireAuth>} />
-
-          {/* Hidden test route */}
-          <Route path="/test-connections" element={<TestConnections />} />
 
           <Route path="*" element={<NotFound />} />
         </Routes>
