@@ -122,6 +122,7 @@ export default function GoogleSheetSync({ mode, onSyncComplete }: { mode: DotMod
 
     toast.success("Sheet linked! Click Sync to pull data.");
     setSheetUrl("");
+    setSheetTabName("");
     fetchConfigs();
   };
 
