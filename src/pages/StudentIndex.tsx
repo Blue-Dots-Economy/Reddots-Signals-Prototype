@@ -3,7 +3,7 @@ import { useAuth } from "@/hooks/useAuth";
 import CentreMapView from "@/components/student/CentreMapView";
 import StudentMapView from "@/components/map/StudentMapView";
 
-const YELLOW = "#2563EB";
+const YELLOW = "#DC143C";
 
 export type StudentView = "clcentre" | "tutor";
 

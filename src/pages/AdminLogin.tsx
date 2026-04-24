@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useAuth } from "@/hooks/useAuth";
 
-const BLUE = "#2563EB";
+const BLUE = "#DC143C";
 
 const AdminLogin = () => {
   const navigate = useNavigate();
@@ -44,7 +44,7 @@ const AdminLogin = () => {
             </svg>
           </div>
           <h1 className="text-lg font-bold text-foreground">Admin Login</h1>
-          <p className="text-sm text-muted-foreground">LAHI BlueDot Administration</p>
+          <p className="text-sm text-muted-foreground">Red Dots Administration</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">

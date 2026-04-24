@@ -1,7 +1,7 @@
 import { useLocation } from "react-router-dom";
 import { useEffect } from "react";
 
-const YELLOW = "#2563EB";
+const YELLOW = "#DC143C";
 
 const NotFound = () => {
   const location = useLocation();
@@ -36,7 +36,7 @@ const NotFound = () => {
         <a
           href="/"
           className="inline-flex items-center gap-2 mt-8 px-6 py-3 rounded-xl text-sm font-semibold text-white transition-all duration-300 hover:shadow-lg active:scale-95"
-          style={{ background: `linear-gradient(135deg, ${YELLOW}, #1D4ED8)`, boxShadow: `0 4px 14px rgba(37,99,235,0.3)` }}
+          style={{ background: `linear-gradient(135deg, ${YELLOW}, #9F0E2E)`, boxShadow: `0 4px 14px rgba(220,20,60,0.3)` }}
         >
           ← Back to Home
         </a>

@@ -190,7 +190,7 @@
     transform: scale(1.15);
   }
   .map-dot-yellow {
-    background-color: #2563EB;
+    background-color: #DC143C;
   }
   .map-badge {
     @apply absolute -top-1 -right-1 rounded-full flex items-center justify-center text-xs font-bold;
@@ -214,8 +214,8 @@
   .pillar-pill {
     @apply px-2.5 py-0.5 rounded-full text-xs font-medium cursor-pointer transition-all duration-200;
   }
-  .pillar-subject_tutoring { background-color: #2563EB; color: white; }
-  .pillar-career_counselling { background-color: #1D4ED8; color: white; }
+  .pillar-subject_tutoring { background-color: #DC143C; color: white; }
+  .pillar-career_counselling { background-color: #9F0E2E; color: white; }
   .pillar-college_admissions { background-color: #1E40AF; color: white; }
   .pillar-skill_workshop { background-color: #2554C7; color: white; }
   .pillar-exam_prep { background-color: #1E3A8A; color: white; }
@@ -265,7 +265,7 @@
     animation: pulse-ring 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
   }
   .dot-pulse-yellow::before {
-    background-color: rgba(37, 99, 235, 0.4);
+    background-color: rgba(220, 20, 60, 0.4);
   }
 
   /* Brand shimmer loader */
@@ -293,8 +293,8 @@
     box-shadow: 0 0 0 0 transparent;
   }
   .input-focus-ring:focus {
-    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
-    border-color: #2563EB;
+    box-shadow: 0 0 0 3px rgba(220, 20, 60, 0.15);
+    border-color: #DC143C;
   }
 
   /* Tab nudge bounce */
@@ -317,7 +317,7 @@
     position: absolute;
     inset: -4px;
     border-radius: 9999px;
-    background: rgba(37, 99, 235, 0.35);
+    background: rgba(220, 20, 60, 0.35);
     animation: tab-nudge-ripple 600ms ease-out 1 forwards;
     pointer-events: none;
   }

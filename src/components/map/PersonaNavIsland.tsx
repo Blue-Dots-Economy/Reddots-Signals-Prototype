@@ -2,7 +2,7 @@ import { Map, List, Link } from "lucide-react";
 
 export type PersonaView = "map" | "list" | "connections";
 
-const BLUE = "#2563EB";
+const BLUE = "#DC143C";
 
 interface Props {
   activeView: PersonaView;
@@ -29,7 +29,7 @@ const PersonaNavIsland = ({ activeView, onSwitchView, connectionCount }: Props) 
         className="relative rounded-full px-3 sm:px-5 py-2 text-xs sm:text-sm font-semibold transition-all duration-300 flex items-center gap-1.5 sm:gap-2 min-h-[40px]"
         style={
           activeView === key
-            ? { background: BLUE, color: "white", boxShadow: "0 2px 8px rgba(37,99,235,0.3)" }
+            ? { background: BLUE, color: "white", boxShadow: "0 2px 8px rgba(220,20,60,0.3)" }
             : { background: "transparent", color: "hsl(var(--muted-foreground))" }
         }
       >

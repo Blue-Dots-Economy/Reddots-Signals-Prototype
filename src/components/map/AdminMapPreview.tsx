@@ -2,8 +2,8 @@ import { useRef, useEffect, useState } from "react";
 import { ChevronDown, ChevronUp, MapPin } from "lucide-react";
 import { useGoogleMaps, CLEAN_MAP_STYLE } from "@/hooks/useGoogleMaps";
 
-const YELLOW = "#2563EB";
-const YELLOW_GLOW = "rgba(37,99,235,0.4)";
+const YELLOW = "#DC143C";
+const YELLOW_GLOW = "rgba(220,20,60,0.4)";
 const GHAZIABAD_CENTER = { lat: 18.5204, lng: 73.8567 };
 const DEFAULT_ZOOM = 12;
 

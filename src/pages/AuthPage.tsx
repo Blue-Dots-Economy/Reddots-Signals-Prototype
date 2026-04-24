@@ -3,7 +3,7 @@ import { Navigate, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { lookupSeeker, lookupProvider, saveProfile, loadProfile } from "@/lib/phoneAuth";
 
-const BLUE = "#2563EB";
+const BLUE = "#DC143C";
 
 interface AuthPageProps {
   role: "student" | "centre";
@@ -70,14 +70,14 @@ const AuthPage = ({ role }: AuthPageProps) => {
           <div className="text-center space-y-3">
             <div
               className="w-14 h-14 rounded-2xl mx-auto flex items-center justify-center"
-              style={{ background: BLUE, boxShadow: `0 8px 32px rgba(37, 99, 235, 0.35)` }}
+              style={{ background: BLUE, boxShadow: `0 8px 32px rgba(220, 20, 60, 0.35)` }}
             >
               <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <circle cx="12" cy="12" r="3" />
                 <circle cx="12" cy="12" r="10" />
               </svg>
             </div>
-            <h1 className="text-2xl font-extrabold text-foreground tracking-tight">LAHI BlueDot</h1>
+            <h1 className="text-2xl font-extrabold text-foreground tracking-tight">Red Dots</h1>
             <p className="text-sm text-muted-foreground">
               {role === "student" ? "Find internships and jobs near you" : "Find candidates near your business"}
             </p>
@@ -94,12 +94,12 @@ const AuthPage = ({ role }: AuthPageProps) => {
                 We couldn't find your number.
               </p>
               <p className="text-sm text-muted-foreground">
-                Please check with your LAHI coordinator.
+                Please check with your Red Dots coordinator.
               </p>
               <button
                 onClick={handleTryAgain}
                 className="mt-4 px-6 py-3 rounded-xl text-sm font-bold text-white transition-all hover:shadow-lg active:scale-[0.98]"
-                style={{ background: `linear-gradient(135deg, ${BLUE}, #1D4ED8)` }}
+                style={{ background: `linear-gradient(135deg, ${BLUE}, #9F0E2E)` }}
               >
                 Try again
               </button>
@@ -131,8 +131,8 @@ const AuthPage = ({ role }: AuthPageProps) => {
                 disabled={loading}
                 className="w-full py-3.5 rounded-xl text-sm font-bold text-white transition-all duration-300 disabled:opacity-50 hover:shadow-lg active:scale-[0.98]"
                 style={{
-                  background: `linear-gradient(135deg, ${BLUE}, #1D4ED8)`,
-                  boxShadow: loading ? 'none' : `0 4px 14px rgba(37, 99, 235, 0.35)`,
+                  background: `linear-gradient(135deg, ${BLUE}, #9F0E2E)`,
+                  boxShadow: loading ? 'none' : `0 4px 14px rgba(220, 20, 60, 0.35)`,
                 }}
               >
                 {loading ? (
@@ -148,7 +148,7 @@ const AuthPage = ({ role }: AuthPageProps) => {
           )}
 
           <p className="text-center text-[11px] text-muted-foreground/60 pt-2">
-            Powered by LAHI BlueDot
+            Powered by Red Dots · EkStep Foundation
           </p>
         </div>
       </div>

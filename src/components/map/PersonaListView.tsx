@@ -25,7 +25,7 @@ const PROVIDER_MINOR_ITEM: ConsentItem = {
   label: "I understand this student is a minor and the consent request will be sent to their parent/guardian",
 };
 
-const BLUE = "#2563EB";
+const BLUE = "#DC143C";
 
 interface Dot {
   id: string;
@@ -296,7 +296,7 @@ const PersonaListView = ({ profile, dots, filteredDots, activeFilters, onFilters
 function StatusPill({ status }: { status: PersonaConnStatus | null }) {
   if (!status) return null;
   const map: Record<PersonaConnStatus, { bg: string; fg: string; label: string }> = {
-    shortlisted: { bg: "#DBEAFE", fg: "#2563EB", label: "Shortlisted" },
+    shortlisted: { bg: "#DBEAFE", fg: "#DC143C", label: "Shortlisted" },
     pending: { bg: "#FEF3C7", fg: "#B45309", label: "Pending" },
     accepted: { bg: "#DCFCE7", fg: "#166534", label: "Connected" },
     declined: { bg: "#E5E7EB", fg: "#6B7280", label: "Declined" },

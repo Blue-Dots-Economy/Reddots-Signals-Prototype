@@ -1,7 +1,7 @@
 import { useState, useRef, useCallback, useEffect, useMemo } from "react";
 import { Search, Filter, X, GripVertical, Minus, Loader2, ChevronDown, Check } from "lucide-react";
 
-const YELLOW = "#2563EB";
+const YELLOW = "#DC143C";
 
 interface DotData {
   pillar: string;
@@ -220,7 +220,7 @@ const FilterPanel = ({
               </div>
               {pillarOptions.map((p) => (
                 <button key={p} onClick={() => onTogglePillar(p)} className="w-full flex items-center gap-2 px-3 py-2 text-xs hover:bg-white/10 transition-colors">
-                  <div className={`w-4 h-4 rounded border flex items-center justify-center flex-shrink-0 ${activePillars.has(p) ? "bg-[#2563EB] border-[#2563EB]" : "border-white/30"}`}>
+                  <div className={`w-4 h-4 rounded border flex items-center justify-center flex-shrink-0 ${activePillars.has(p) ? "bg-[#DC143C] border-[#DC143C]" : "border-white/30"}`}>
                     {activePillars.has(p) && <Check size={10} className="text-white" />}
                   </div>
                   <span className="opacity-80">{formatLabel(p)}</span>
@@ -247,7 +247,7 @@ const FilterPanel = ({
               </div>
               {subcategoryOptions.map((s) => (
                 <button key={s} onClick={() => onToggleSubcategory(s)} className="w-full flex items-center gap-2 px-3 py-2 text-xs hover:bg-white/10 transition-colors">
-                  <div className={`w-4 h-4 rounded border flex items-center justify-center flex-shrink-0 ${activeSubcategories.has(s) ? "bg-[#2563EB] border-[#2563EB]" : "border-white/30"}`}>
+                  <div className={`w-4 h-4 rounded border flex items-center justify-center flex-shrink-0 ${activeSubcategories.has(s) ? "bg-[#DC143C] border-[#DC143C]" : "border-white/30"}`}>
                     {activeSubcategories.has(s) && <Check size={10} className="text-white" />}
                   </div>
                   <span className="opacity-80">{s}</span>

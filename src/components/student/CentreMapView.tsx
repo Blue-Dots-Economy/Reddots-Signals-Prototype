@@ -16,7 +16,7 @@ import ZoomControls from "../map/ZoomControls";
 import UnifiedFilterPanel from "../map/UnifiedFilterPanel";
 import { ArrowLeft, LogOut, Map, List, MapPin, ClipboardList, Send } from "lucide-react";
 
-const YELLOW = "#2563EB";
+const YELLOW = "#DC143C";
 
 interface Centre {
   id: string; name: string; area: string; lat: number; lng: number;
@@ -425,13 +425,13 @@ const CentreMapView = ({ onBack, activeView, onSwitchView }: Props) => {
       )}
 
       <div className="fixed bottom-4 sm:bottom-5 left-1/2 -translate-x-1/2 z-[1100] floating-nav">
-        <button onClick={() => setActiveTab("map")} className="relative rounded-full px-3.5 sm:px-5 py-2 text-xs sm:text-sm font-semibold transition-all duration-300 flex items-center gap-1.5 sm:gap-2" style={activeTab === "map" ? { background: YELLOW, color: "white", boxShadow: "0 2px 8px rgba(37,99,235,0.3)" } : { background: "transparent", color: "hsl(var(--muted-foreground))" }}>
+        <button onClick={() => setActiveTab("map")} className="relative rounded-full px-3.5 sm:px-5 py-2 text-xs sm:text-sm font-semibold transition-all duration-300 flex items-center gap-1.5 sm:gap-2" style={activeTab === "map" ? { background: YELLOW, color: "white", boxShadow: "0 2px 8px rgba(220,20,60,0.3)" } : { background: "transparent", color: "hsl(var(--muted-foreground))" }}>
           <Map size={14} className="sm:w-4 sm:h-4" /> Map
         </button>
-        <button onClick={() => setActiveTab("list")} className="relative rounded-full px-3.5 sm:px-5 py-2 text-xs sm:text-sm font-semibold transition-all duration-300 flex items-center gap-1.5 sm:gap-2" style={activeTab === "list" ? { background: YELLOW, color: "white", boxShadow: "0 2px 8px rgba(37,99,235,0.3)" } : { background: "transparent", color: "hsl(var(--muted-foreground))" }}>
+        <button onClick={() => setActiveTab("list")} className="relative rounded-full px-3.5 sm:px-5 py-2 text-xs sm:text-sm font-semibold transition-all duration-300 flex items-center gap-1.5 sm:gap-2" style={activeTab === "list" ? { background: YELLOW, color: "white", boxShadow: "0 2px 8px rgba(220,20,60,0.3)" } : { background: "transparent", color: "hsl(var(--muted-foreground))" }}>
           <List size={14} className="sm:w-4 sm:h-4" /> List
         </button>
-        <button onClick={() => { setActiveTab("outreach"); setOutreachKey((k) => k + 1); }} className={`relative rounded-full px-3.5 sm:px-5 py-2 text-xs sm:text-sm font-semibold transition-all duration-300 flex items-center gap-1.5 sm:gap-2 ${tabNudgeActive ? "tab-nudge-bounce tab-nudge-ripple" : ""}`} style={activeTab === "outreach" ? { background: YELLOW, color: "white", boxShadow: "0 2px 8px rgba(37,99,235,0.3)" } : { background: "transparent", color: "hsl(var(--muted-foreground))" }}>
+        <button onClick={() => { setActiveTab("outreach"); setOutreachKey((k) => k + 1); }} className={`relative rounded-full px-3.5 sm:px-5 py-2 text-xs sm:text-sm font-semibold transition-all duration-300 flex items-center gap-1.5 sm:gap-2 ${tabNudgeActive ? "tab-nudge-bounce tab-nudge-ripple" : ""}`} style={activeTab === "outreach" ? { background: YELLOW, color: "white", boxShadow: "0 2px 8px rgba(220,20,60,0.3)" } : { background: "transparent", color: "hsl(var(--muted-foreground))" }}>
           <Send size={14} className="sm:w-4 sm:h-4" /> My Connections
           {connectBadgeCount > 0 && (
             <span className="absolute -top-1.5 -right-1 min-w-[18px] h-[18px] flex items-center justify-center rounded-full bg-destructive text-destructive-foreground text-[10px] font-bold px-1 shadow-sm animate-in zoom-in-50">

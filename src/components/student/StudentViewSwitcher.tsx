@@ -1,7 +1,7 @@
 import { Building2, GraduationCap } from "lucide-react";
 import type { StudentView } from "@/pages/StudentIndex";
 
-const YELLOW = "#2563EB";
+const YELLOW = "#DC143C";
 
 interface Props {
   activeView: StudentView;
@@ -14,7 +14,7 @@ const StudentViewSwitcher = ({ activeView, onSwitchView }: Props) => (
       onClick={() => onSwitchView("clcentre")}
       className="relative rounded-full px-3.5 sm:px-5 py-2 text-xs sm:text-sm font-semibold transition-all duration-300 flex items-center gap-1.5 sm:gap-2"
       style={activeView === "clcentre"
-        ? { background: YELLOW, color: "white", boxShadow: "0 2px 8px rgba(37,99,235,0.3)" }
+        ? { background: YELLOW, color: "white", boxShadow: "0 2px 8px rgba(220,20,60,0.3)" }
         : { background: "transparent", color: "hsl(var(--muted-foreground))" }
       }
     >
@@ -24,7 +24,7 @@ const StudentViewSwitcher = ({ activeView, onSwitchView }: Props) => (
       onClick={() => onSwitchView("tutor")}
       className="relative rounded-full px-3.5 sm:px-5 py-2 text-xs sm:text-sm font-semibold transition-all duration-300 flex items-center gap-1.5 sm:gap-2"
       style={activeView === "tutor"
-        ? { background: YELLOW, color: "white", boxShadow: "0 2px 8px rgba(37,99,235,0.3)" }
+        ? { background: YELLOW, color: "white", boxShadow: "0 2px 8px rgba(220,20,60,0.3)" }
         : { background: "transparent", color: "hsl(var(--muted-foreground))" }
       }
     >
