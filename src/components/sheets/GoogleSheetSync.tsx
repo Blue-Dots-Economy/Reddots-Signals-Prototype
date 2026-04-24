@@ -38,6 +38,7 @@ interface SheetConfig {
   id: string;
   sheet_url: string;
   sheet_id: string;
+  sheet_tab_name: string | null;
   dot_type: string;
   last_synced_at: string | null;
   sync_status: string | null;
@@ -49,8 +50,22 @@ export default function GoogleSheetSync({ mode, onSyncComplete }: { mode: DotMod
   const [configs, setConfigs] = useState<SheetConfig[]>([]);
   const [loading, setLoading] = useState(true);
   const [sheetUrl, setSheetUrl] = useState("");
+  const [sheetTabName, setSheetTabName] = useState("");
   const [linking, setLinking] = useState(false);
   const [syncing, setSyncing] = useState<string | null>(null);
+  const [editingTabId, setEditingTabId] = useState<string | null>(null);
+  const [tabDraft, setTabDraft] = useState("");
+
+  const saveTabName = async (id: string) => {
+    const { error } = await supabase
+      .from("sheet_configs")
+      .update({ sheet_tab_name: tabDraft.trim() || "Sheet1" } as any)
+      .eq("id", id);
+    if (error) { toast.error("Failed to update tab"); return; }
+    toast.success("Tab name updated");
+    setEditingTabId(null);
+    fetchConfigs();
+  };
 
   useEffect(() => {
     fetchConfigs();
@@ -96,6 +111,7 @@ export default function GoogleSheetSync({ mode, onSyncComplete }: { mode: DotMod
       sheet_url: sheetUrl.trim(),
       sheet_id: sheetId,
       dot_type: mode,
+      sheet_tab_name: sheetTabName.trim() || "Sheet1",
     } as any);
     setLinking(false);
 
