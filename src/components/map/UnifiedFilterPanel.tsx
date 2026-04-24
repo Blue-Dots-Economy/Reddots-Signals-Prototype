@@ -1,7 +1,7 @@
 import { useState, useRef, useCallback, useEffect, useMemo } from "react";
 import { Search, Filter, X, GripVertical, Minus, Loader2, ChevronDown, Check } from "lucide-react";
 
-const YELLOW = "#2563EB";
+const YELLOW = "#DC143C";
 
 interface FilterDimension {
   label: string;
@@ -202,7 +202,7 @@ const UnifiedFilterPanel = ({
               </div>
               {f.options.map((opt) => (
                 <button key={opt} onClick={() => f.onToggle(opt)} className="w-full flex items-center gap-2 px-3 py-2 text-xs hover:bg-white/10 transition-colors">
-                  <div className={`w-4 h-4 rounded border flex items-center justify-center flex-shrink-0 ${f.active.has(opt) ? "bg-[#2563EB] border-[#2563EB]" : "border-white/30"}`}>
+                  <div className={`w-4 h-4 rounded border flex items-center justify-center flex-shrink-0 ${f.active.has(opt) ? "bg-[#DC143C] border-[#DC143C]" : "border-white/30"}`}>
                     {f.active.has(opt) && <Check size={10} className="text-white" />}
                   </div>
                   <span className="opacity-80">{formatLabel(opt)}</span>
@@ -224,7 +224,7 @@ const UnifiedFilterPanel = ({
             <div className="absolute top-full left-0 right-0 mt-1 bg-[#1a1a2e] border border-white/10 rounded-lg overflow-hidden shadow-lg z-20">
               {DISTANCE_OPTIONS.map((opt) => (
                 <button key={String(opt.value)} onClick={() => { onDistanceChange(opt.value); setOpenDropdown(null); }} className="w-full flex items-center gap-2 px-3 py-2 text-xs hover:bg-white/10 transition-colors">
-                  <div className={`w-4 h-4 rounded-full border flex items-center justify-center flex-shrink-0 ${distanceKm === opt.value ? "bg-[#2563EB] border-[#2563EB]" : "border-white/30"}`}>
+                  <div className={`w-4 h-4 rounded-full border flex items-center justify-center flex-shrink-0 ${distanceKm === opt.value ? "bg-[#DC143C] border-[#DC143C]" : "border-white/30"}`}>
                     {distanceKm === opt.value && <Check size={10} className="text-white" />}
                   </div>
                   <span className="opacity-80">{opt.label}</span>

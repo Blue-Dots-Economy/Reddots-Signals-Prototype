@@ -7,7 +7,7 @@ interface RequireAuthProps {
   loginPath?: string;
 }
 
-const YELLOW = "#2563EB";
+const YELLOW = "#DC143C";
 
 const RequireAuth = ({ children, loginPath = "/" }: RequireAuthProps) => {
   const { user, loading } = useAuth();
@@ -17,7 +17,7 @@ const RequireAuth = ({ children, loginPath = "/" }: RequireAuthProps) => {
       <div className="h-screen flex flex-col items-center justify-center gap-4 bg-background">
         <div
           className="w-12 h-12 rounded-2xl flex items-center justify-center animate-float"
-          style={{ background: YELLOW, boxShadow: `0 8px 24px rgba(37, 99, 235, 0.3)` }}
+          style={{ background: YELLOW, boxShadow: `0 8px 24px rgba(220, 20, 60, 0.3)` }}
         >
           <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />

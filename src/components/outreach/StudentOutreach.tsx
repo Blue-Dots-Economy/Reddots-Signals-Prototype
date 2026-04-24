@@ -4,7 +4,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
 import { Trash2, Star, ArrowRight, CheckCircle2, Inbox, Check, X, Clock, BookOpen, Building2 } from "lucide-react";
 
-const YELLOW = "#2563EB";
+const YELLOW = "#DC143C";
 const REVEAL_STATUSES = new Set(["session_booked", "completed", "responded"]);
 
 function anonymizeName(name: string): string {
@@ -72,7 +72,7 @@ const ConnectCard = ({
         );
       case "pending":
         return (
-          <span className="inline-flex items-center gap-1 sm:gap-1.5 text-[10px] sm:text-[11px] font-bold px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg border-2" style={{ color: "#1D4ED8", borderColor: "#1D4ED8", background: "#1D4ED810" }}>
+          <span className="inline-flex items-center gap-1 sm:gap-1.5 text-[10px] sm:text-[11px] font-bold px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg border-2" style={{ color: "#9F0E2E", borderColor: "#9F0E2E", background: "#9F0E2E10" }}>
             Pending <Clock size={11} />
           </span>
         );
@@ -430,7 +430,7 @@ const StudentOutreach = ({ onChanged }: { onChanged?: () => void }) => {
 
       {renderSection(
         "Reached Out", `${pending.length} pending`,
-        <Clock size={18} className="sm:w-5 sm:h-5" style={{ color: "#1D4ED8" }} />,
+        <Clock size={18} className="sm:w-5 sm:h-5" style={{ color: "#9F0E2E" }} />,
         pending, connected.length > 0 || sectionIndex > 0
       )}
 

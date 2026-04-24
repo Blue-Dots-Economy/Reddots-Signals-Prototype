@@ -10,7 +10,7 @@ import * as XLSX from "xlsx";
 import AdminMapPreview from "@/components/map/AdminMapPreview";
 import GoogleSheetSync from "@/components/sheets/GoogleSheetSync";
 
-const YELLOW = "#2563EB";
+const YELLOW = "#DC143C";
 
 type DotMode = "student" | "tutor" | "counsellor" | "centre" | "college";
 

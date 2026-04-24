@@ -2,7 +2,7 @@ import { useEffect, useState, useMemo } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { ChevronDown, ChevronUp, Search } from "lucide-react";
 
-const YELLOW = "#2563EB";
+const YELLOW = "#DC143C";
 
 interface StudentDot {
   id: string;

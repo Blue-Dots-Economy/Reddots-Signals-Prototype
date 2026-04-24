@@ -6,7 +6,7 @@ import {
   Trash2, Star, ArrowRight, CheckCircle2, Clock, Send, Inbox, Check, X,
 } from "lucide-react";
 
-const YELLOW = "#2563EB";
+const YELLOW = "#DC143C";
 
 function anonymizeName(name: string): string {
   return name.split(" ").map((w) => {
@@ -82,7 +82,7 @@ const OutreachCard = ({
         return (
           <span
             className="inline-flex items-center gap-1 sm:gap-1.5 text-[10px] sm:text-[11px] font-bold px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg border-2"
-            style={{ color: "#1D4ED8", borderColor: "#1D4ED8", background: "#1D4ED810" }}
+            style={{ color: "#9F0E2E", borderColor: "#9F0E2E", background: "#9F0E2E10" }}
           >
             Pending Request <Clock size={11} />
           </span>
@@ -448,7 +448,7 @@ const MyOutreach = ({ onChanged }: { onChanged?: () => void }) => {
         <>
           <div className="px-3 sm:px-4 pt-4 sm:pt-5 pb-3 sm:pb-4">
             <div className="flex items-center gap-2">
-              <Inbox size={18} className="sm:w-5 sm:h-5" style={{ color: "#1D4ED8" }} />
+              <Inbox size={18} className="sm:w-5 sm:h-5" style={{ color: "#9F0E2E" }} />
               <h2 className="text-lg sm:text-xl font-extrabold text-foreground tracking-tight">Student Requests</h2>
             </div>
             <p className="text-[12px] sm:text-[13px] text-muted-foreground mt-0.5">
@@ -484,7 +484,7 @@ const MyOutreach = ({ onChanged }: { onChanged?: () => void }) => {
       {pendingConsent.length > 0 && (
         <>
           <SectionHeader
-            icon={<Clock size={18} className="sm:w-5 sm:h-5" style={{ color: "#1D4ED8" }} />}
+            icon={<Clock size={18} className="sm:w-5 sm:h-5" style={{ color: "#9F0E2E" }} />}
             title="Students Reached Out To"
             count={pendingConsent.length}
             borderTop={shortlisted.length > 0 || incomingRequests.length > 0}

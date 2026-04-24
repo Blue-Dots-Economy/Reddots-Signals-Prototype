@@ -208,7 +208,7 @@ const PersonaFilterTerminal = ({ persona, initialFilters, onFiltersChange, visib
               </div>
               {config.sectorOptions.map((opt) => (
                 <button key={opt} onClick={() => toggleSector(opt)} className="w-full flex items-center gap-2 px-3 py-2 text-xs hover:bg-white/10 transition-colors">
-                  <div className={`w-4 h-4 rounded border flex items-center justify-center flex-shrink-0 ${activeSectors.has(opt) ? "bg-[#2563EB] border-[#2563EB]" : "border-white/30"}`}>
+                  <div className={`w-4 h-4 rounded border flex items-center justify-center flex-shrink-0 ${activeSectors.has(opt) ? "bg-[#DC143C] border-[#DC143C]" : "border-white/30"}`}>
                     {activeSectors.has(opt) && <Check size={10} className="text-white" />}
                   </div>
                   <span className="opacity-80">{opt}</span>
@@ -240,8 +240,8 @@ const PersonaFilterTerminal = ({ persona, initialFilters, onFiltersChange, visib
                 updateFilters(activeSectors, val);
               }
             }}
-            className="w-full h-1.5 rounded-full appearance-none cursor-pointer accent-[#2563EB]"
-            style={{ background: `linear-gradient(to right, #2563EB ${((activeDistance === null ? config.distanceOptions.length : config.distanceOptions.findIndex(o => o.value === activeDistance)) / config.distanceOptions.length) * 100}%, rgba(255,255,255,0.15) 0%)` }}
+            className="w-full h-1.5 rounded-full appearance-none cursor-pointer accent-[#DC143C]"
+            style={{ background: `linear-gradient(to right, #DC143C ${((activeDistance === null ? config.distanceOptions.length : config.distanceOptions.findIndex(o => o.value === activeDistance)) / config.distanceOptions.length) * 100}%, rgba(255,255,255,0.15) 0%)` }}
           />
           <div className="flex justify-between mt-1">
             {config.distanceOptions.map((opt) => (

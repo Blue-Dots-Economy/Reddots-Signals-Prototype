@@ -4,7 +4,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
 import { Search, X, Star, MapPin, Clock, DollarSign, Phone, ArrowLeft } from "lucide-react";
 
-const YELLOW = "#2563EB";
+const YELLOW = "#DC143C";
 
 interface Counsellor {
   id: string;

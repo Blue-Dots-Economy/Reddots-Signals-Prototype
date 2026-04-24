@@ -8,7 +8,7 @@ import StudentDataTable from "@/components/admin/StudentDataTable";
 import { toast } from "sonner";
 import { buildNameMaps, resolveName } from "@/lib/resolveNames";
 
-const YELLOW = "#2563EB";
+const YELLOW = "#DC143C";
 
 type DashboardTab = "overview" | "tutor" | "counsellor" | "centre" | "college" | "student";
 
@@ -55,7 +55,7 @@ const AdminDashboard = () => {
             </div>
             <div>
               <h1 className="text-base sm:text-lg font-bold text-foreground">Admin Dashboard</h1>
-              <p className="text-xs text-muted-foreground">Blue Dots Analytics</p>
+              <p className="text-xs text-muted-foreground">Red Dots Analytics</p>
             </div>
           </div>
           <button onClick={handleSignOut} className="flex items-center gap-1.5 text-xs sm:text-sm text-muted-foreground hover:text-foreground transition-colors border border-border rounded-lg px-2.5 py-1.5 sm:px-3 sm:py-2">

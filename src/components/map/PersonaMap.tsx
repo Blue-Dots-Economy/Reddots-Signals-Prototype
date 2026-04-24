@@ -10,7 +10,7 @@ import type { UserProfile } from "@/lib/phoneAuth";
 import type { ChatFilters } from "@/components/chat/PersonaChat";
 import { usePersonaConnections, type PersonaConnStatus } from "@/hooks/usePersonaConnections";
 
-const BLUE = "#2563EB";
+const BLUE = "#DC143C";
 
 interface Dot {
   id: string;
@@ -52,7 +52,7 @@ function createDotMarker(name: string, icon: string | undefined, status: Persona
   const opacity = status === "declined" ? "0.5" : "1";
   let badge = "";
   if (status === "shortlisted") {
-    badge = `<div style="position:absolute;top:-2px;right:-2px;width:16px;height:16px;border-radius:50%;background:#2563EB;border:2px solid white;display:flex;align-items:center;justify-content:center;">
+    badge = `<div style="position:absolute;top:-2px;right:-2px;width:16px;height:16px;border-radius:50%;background:#DC143C;border:2px solid white;display:flex;align-items:center;justify-content:center;">
       <svg width="8" height="8" viewBox="0 0 24 24" fill="white"><polygon points="12,2 15,9 22,9 17,14 19,21 12,17 5,21 7,14 2,9 9,9"/></svg>
     </div>`;
   } else if (status === "pending") {
@@ -92,7 +92,7 @@ const PersonaMap = ({ profile, filters, dots, filteredDots, activeFilters, onFil
     if (!g?.maps) return;
     const map = new g.maps.Map(mapRef.current, {
       center: { lat: profile.lat, lng: profile.lng },
-      zoom: 13,
+      zoom: 12,
       minZoom: MIN_ZOOM,
       maxZoom: MAX_ZOOM,
       disableDefaultUI: true,
@@ -149,11 +149,11 @@ const PersonaMap = ({ profile, filters, dots, filteredDots, activeFilters, onFil
     });
   }, [filteredDots, mapReady, allConnections]);
 
-  const handleZoomIn = () => { const m = mapInstance.current; if (m) m.setZoom((m.getZoom() || 13) + 1); };
-  const handleZoomOut = () => { const m = mapInstance.current; if (m) m.setZoom((m.getZoom() || 13) - 1); };
+  const handleZoomIn = () => { const m = mapInstance.current; if (m) m.setZoom((m.getZoom() || 12) + 1); };
+  const handleZoomOut = () => { const m = mapInstance.current; if (m) m.setZoom((m.getZoom() || 12) - 1); };
   const handleReset = () => {
     const m = mapInstance.current;
-    if (m) { m.setCenter({ lat: profile.lat, lng: profile.lng }); m.setZoom(13); }
+    if (m) { m.setCenter({ lat: profile.lat, lng: profile.lng }); m.setZoom(12); }
   };
 
   return (

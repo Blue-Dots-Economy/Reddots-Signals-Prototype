@@ -6,7 +6,7 @@ import {
 } from "@/lib/connections";
 import { toast } from "sonner";
 
-const YELLOW = "#2563EB";
+const YELLOW = "#DC143C";
 const PERSONAS = ["student", "tutor", "cl_centre", "hei"] as const;
 type Persona = typeof PERSONAS[number];
 
@@ -427,7 +427,7 @@ const TestConnections = () => {
           <div className="space-y-4">
             <div className="flex flex-wrap gap-4">
               <StatPill label="Total" value={stats.total} />
-              <StatPill label="Pending" value={stats.pending} color="#2563EB" />
+              <StatPill label="Pending" value={stats.pending} color="#DC143C" />
               <StatPill label="Accepted" value={stats.accepted} color="#2E7D32" />
               <StatPill label="Rejected" value={stats.rejected} color="#EF4444" />
             </div>

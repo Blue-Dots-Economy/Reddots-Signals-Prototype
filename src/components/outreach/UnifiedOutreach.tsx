@@ -10,7 +10,7 @@ import {
   Trash2, Star, CheckCircle2, Clock, Inbox, Check, X, BookOpen, Building2, User, Info,
 } from "lucide-react";
 
-const YELLOW = "#2563EB";
+const YELLOW = "#DC143C";
 
 function anonymizeName(name: string): string {
   return name.split(" ").map((w) => {
@@ -78,7 +78,7 @@ const SentCard = ({
           {new Date(conn.created_at).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "2-digit" })}
         </span>
         {conn.status === "pending" && (
-          <span className="inline-flex items-center gap-1 sm:gap-1.5 text-[10px] sm:text-[11px] font-bold px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg border-2" style={{ color: "#1D4ED8", borderColor: "#1D4ED8", background: "#1D4ED810" }}>
+          <span className="inline-flex items-center gap-1 sm:gap-1.5 text-[10px] sm:text-[11px] font-bold px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg border-2" style={{ color: "#9F0E2E", borderColor: "#9F0E2E", background: "#9F0E2E10" }}>
             Pending <Clock size={11} />
           </span>
         )}
@@ -335,7 +335,7 @@ const UnifiedOutreach = ({ onChanged }: { onChanged?: () => void }) => {
         <>
           <div className="px-3 sm:px-4 pt-4 sm:pt-5 pb-3 sm:pb-4">
             <div className="flex items-center gap-2">
-              <Inbox size={18} className="sm:w-5 sm:h-5" style={{ color: "#1D4ED8" }} />
+              <Inbox size={18} className="sm:w-5 sm:h-5" style={{ color: "#9F0E2E" }} />
               <h2 className="text-lg sm:text-xl font-extrabold text-foreground tracking-tight">Incoming Requests</h2>
             </div>
             <p className="text-[12px] sm:text-[13px] text-muted-foreground mt-0.5">
@@ -355,14 +355,14 @@ const UnifiedOutreach = ({ onChanged }: { onChanged?: () => void }) => {
         <>
           <div className={`px-3 sm:px-4 pt-4 sm:pt-5 pb-3 sm:pb-4 ${incomingPending.length > 0 ? "border-t border-border" : ""}`}>
             <div className="flex items-center gap-2">
-              <Clock size={18} className="sm:w-5 sm:h-5" style={{ color: "#1D4ED8" }} />
+              <Clock size={18} className="sm:w-5 sm:h-5" style={{ color: "#9F0E2E" }} />
               <h2 className="text-lg sm:text-xl font-extrabold text-foreground tracking-tight">Pending</h2>
             </div>
             <p className="text-[12px] sm:text-[13px] text-muted-foreground mt-0.5">{pending.length} awaiting response</p>
           </div>
           {getPersonaFromPath() === "cl_centre" && (
-            <div className="mx-3 sm:mx-4 mb-3 sm:mb-4 flex items-center gap-2.5 px-3 py-2.5 rounded-lg" style={{ background: "#FFF8E7", border: "1px solid #2563EB", borderLeft: "3px solid #2563EB" }}>
-              <Info size={16} className="flex-shrink-0" style={{ color: "#2563EB" }} />
+            <div className="mx-3 sm:mx-4 mb-3 sm:mb-4 flex items-center gap-2.5 px-3 py-2.5 rounded-lg" style={{ background: "#FFF8E7", border: "1px solid #DC143C", borderLeft: "3px solid #DC143C" }}>
+              <Info size={16} className="flex-shrink-0" style={{ color: "#DC143C" }} />
               <p className="text-[11px] sm:text-[12px] text-foreground/80 leading-snug">
                 Seekers will receive your request and choose to connect or decline. Their contact details are shared only after they accept.
               </p>

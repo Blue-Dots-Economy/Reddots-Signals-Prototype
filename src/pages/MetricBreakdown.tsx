@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { ArrowLeft } from "lucide-react";
 import { buildNameMaps, resolveName } from "@/lib/resolveNames";
 
-const YELLOW = "#2563EB";
+const YELLOW = "#DC143C";
 
 type MetricType = "initiated" | "responded" | "accepted" | "rejected" | "contact_viewed";
 type Persona = "overview" | "tutor" | "student" | "counsellor" | "centre" | "college";

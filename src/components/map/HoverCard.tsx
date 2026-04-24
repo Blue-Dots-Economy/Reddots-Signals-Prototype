@@ -2,7 +2,7 @@ import type { MapDot } from "@/lib/mapData";
 import { PILLAR_LABELS } from "@/lib/mapData";
 import DotIconComponent from "./DotIcon";
 
-const YELLOW = "#2563EB";
+const YELLOW = "#DC143C";
 
 interface Props {
   dot: MapDot;
@@ -30,19 +30,19 @@ const HoverCard = ({ dot }: Props) => {
         <div className="flex items-center gap-2">
           <div
             className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0"
-            style={{ background: `linear-gradient(135deg, ${YELLOW}, #1D4ED8)`, boxShadow: `0 2px 8px rgba(37,99,235,0.25)` }}
+            style={{ background: `linear-gradient(135deg, ${YELLOW}, #9F0E2E)`, boxShadow: `0 2px 8px rgba(220,20,60,0.25)` }}
           >
             <span className="text-white">
               <DotIconComponent icon={dot.icon} size={14} />
             </span>
           </div>
           <span className="px-2.5 py-0.5 rounded-full text-[11px] font-semibold text-white" style={{ background: ({
-            subject_tutoring: "#2563EB",
-            career_counselling: "#1D4ED8",
+            subject_tutoring: "#DC143C",
+            career_counselling: "#9F0E2E",
             college_admissions: "#1E40AF",
             skill_workshop: "#2554C7",
             exam_prep: "#1E3A8A",
-          } as Record<string, string>)[dot.pillar] || "#2563EB" }}>
+          } as Record<string, string>)[dot.pillar] || "#DC143C" }}>
             {PILLAR_LABELS[dot.pillar]}
           </span>
         </div>

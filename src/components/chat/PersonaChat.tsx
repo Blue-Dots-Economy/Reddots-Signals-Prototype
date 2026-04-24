@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { MessageCircle, ArrowRight, RotateCcw } from "lucide-react";
 import type { PersonaType } from "@/lib/phoneAuth";
 
-const BLUE = "#2563EB";
+const BLUE = "#DC143C";
 
 export interface ChatFilters {
   sector?: string[];
@@ -245,12 +245,12 @@ const PersonaChat = ({ persona, userName, onComplete }: Props) => {
         <div className="flex items-center gap-2.5">
           <div
             className="w-9 h-9 rounded-full flex items-center justify-center"
-            style={{ background: `linear-gradient(135deg, ${BLUE}, #1D4ED8)` }}
+            style={{ background: `linear-gradient(135deg, ${BLUE}, #9F0E2E)` }}
           >
             <MessageCircle size={16} className="text-white" />
           </div>
           <div>
-            <p className="text-sm font-bold text-foreground tracking-tight">LAHI BlueDot</p>
+            <p className="text-sm font-bold text-foreground tracking-tight">Red Dots</p>
             <p className="text-[11px] text-muted-foreground">Let's find what you need</p>
           </div>
         </div>
@@ -268,7 +268,7 @@ const PersonaChat = ({ persona, userName, onComplete }: Props) => {
                     : "rounded-2xl rounded-bl-md bg-muted text-foreground"
                 }`}
                 style={msg.from === "user" ? {
-                  background: `linear-gradient(135deg, ${BLUE}, #1D4ED8)`,
+                  background: `linear-gradient(135deg, ${BLUE}, #9F0E2E)`,
                 } : {}}
               >
                 {msg.text}
@@ -312,7 +312,7 @@ const PersonaChat = ({ persona, userName, onComplete }: Props) => {
                     <button
                       onClick={handleMultiConfirm}
                       className="text-sm font-bold px-6 py-2.5 rounded-xl text-white transition-all hover:shadow-lg active:scale-95"
-                      style={{ background: `linear-gradient(135deg, ${BLUE}, #1D4ED8)` }}
+                      style={{ background: `linear-gradient(135deg, ${BLUE}, #9F0E2E)` }}
                     >
                       Continue →
                     </button>

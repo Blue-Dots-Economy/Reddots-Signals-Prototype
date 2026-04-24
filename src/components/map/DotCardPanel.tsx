@@ -22,7 +22,7 @@ const PROVIDER_MINOR_ITEM: ConsentItem = {
   label: "I understand this student is a minor and the consent request will be sent to their parent/guardian",
 };
 
-const BLUE = "#2563EB";
+const BLUE = "#DC143C";
 const GREEN = "#16A34A";
 const AMBER = "#D97706";
 const PANEL_CLASS =

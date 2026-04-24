@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { MessageCircle, ArrowRight, RotateCcw } from "lucide-react";
 
-const YELLOW = "#2563EB";
+const YELLOW = "#DC143C";
 
 export type StudentPath = "tutoring" | "counselling_online" | "counselling_centre" | "colleges";
 
@@ -51,7 +51,7 @@ const StudentOnboarding = ({ onComplete, onReset }: Props) => {
       setMessages([
         {
           from: "bot",
-          text: "Hey! 👋 Welcome to Blue Dots. What are you looking for today?",
+          text: "Hey! 👋 Welcome to Red Dots. What are you looking for today?",
           options: [
             { label: "📚 Tutoring", value: "tutoring" },
             { label: "🎯 Admissions Counselling", value: "counselling" },
@@ -149,12 +149,12 @@ const StudentOnboarding = ({ onComplete, onReset }: Props) => {
         <div className="flex items-center gap-2.5">
           <div
             className="w-9 h-9 rounded-full flex items-center justify-center"
-            style={{ background: `linear-gradient(135deg, ${YELLOW}, #1D4ED8)`, boxShadow: `0 2px 10px rgba(37,99,235,0.3)` }}
+            style={{ background: `linear-gradient(135deg, ${YELLOW}, #9F0E2E)`, boxShadow: `0 2px 10px rgba(220,20,60,0.3)` }}
           >
             <MessageCircle size={16} className="text-white" />
           </div>
           <div>
-            <p className="text-sm font-bold text-foreground tracking-tight">Blue Dots Assistant</p>
+            <p className="text-sm font-bold text-foreground tracking-tight">Red Dots Assistant</p>
             <p className="text-[11px] text-muted-foreground">Let's find what you need</p>
           </div>
         </div>
@@ -175,8 +175,8 @@ const StudentOnboarding = ({ onComplete, onReset }: Props) => {
                     : "rounded-2xl rounded-bl-md bg-muted text-foreground"
                 }`}
                 style={msg.from === "user" ? {
-                  background: `linear-gradient(135deg, ${YELLOW}, #1D4ED8)`,
-                  boxShadow: '0 2px 8px rgba(37,99,235,0.2)',
+                  background: `linear-gradient(135deg, ${YELLOW}, #9F0E2E)`,
+                  boxShadow: '0 2px 8px rgba(220,20,60,0.2)',
                 } : {
                   boxShadow: '0 1px 4px rgba(0,0,0,0.04)',
                 }}

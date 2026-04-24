@@ -1,7 +1,7 @@
 import { useState, useRef, useCallback, useEffect, useMemo } from "react";
 import { Search, Filter, X, GripVertical, Minus, Loader2, ChevronDown, Check } from "lucide-react";
 
-const YELLOW = "#2563EB";
+const YELLOW = "#DC143C";
 
 interface TutorDotData {
   subject: string;
@@ -175,7 +175,7 @@ const StudentFilterPanel = ({
                   onClick={() => onToggleSubject(key)}
                   className="w-full flex items-center gap-2 text-left text-xs px-3 py-2 hover:bg-white/10 transition-colors"
                 >
-                  <span className={`w-3.5 h-3.5 rounded border flex-shrink-0 flex items-center justify-center ${activeSubjects.has(key) ? "bg-[#2563EB] border-[#2563EB]" : "border-white/30"}`}>
+                  <span className={`w-3.5 h-3.5 rounded border flex-shrink-0 flex items-center justify-center ${activeSubjects.has(key) ? "bg-[#DC143C] border-[#DC143C]" : "border-white/30"}`}>
                     {activeSubjects.has(key) && (
                       <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
                     )}

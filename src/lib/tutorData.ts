@@ -46,8 +46,8 @@ export const TUTOR_SUBJECT_LABELS: Record<TutorSubject, string> = {
 };
 
 export const TUTOR_SUBJECT_COLORS: Record<TutorSubject, string> = {
-  mathematics: "#2563EB",
-  physics: "#1D4ED8",
+  mathematics: "#DC143C",
+  physics: "#9F0E2E",
   chemistry: "#1E40AF",
   biology: "#2E7D32",
   english: "#2554C7",
@@ -110,5 +110,5 @@ tutorDots.forEach((dot) => {
   dot.name = anonymizeName(dot.name);
 });
 
-export const TUTOR_CENTER: [number, number] = [28.6139, 77.2090];
+export const TUTOR_CENTER: [number, number] = [26.1445, 91.7362];
 export const TUTOR_DEFAULT_ZOOM = 10;
