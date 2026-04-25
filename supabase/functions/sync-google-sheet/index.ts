@@ -284,10 +284,13 @@ Deno.serve(async (req) => {
         });
         console.log(`Parsed ${dataRows.length} data rows`);
 
-        // Red Dots only supports two dot types now: services (student_dots) + hotspots (centre_dots).
+        // Red Dots supports three dot types: services (student_dots), hotspots (centre_dots), potholes (pothole_dots).
         // Backwards compatibility: legacy values "tutor"/"college"/"counsellor" all collapse to services.
         const isHotspot = config.dot_type === "centre" || config.dot_type === "hotspot";
-        const table: "student_dots" | "centre_dots" = isHotspot ? "centre_dots" : "student_dots";
+        const isPothole = config.dot_type === "pothole";
+        const table: "student_dots" | "centre_dots" | "pothole_dots" = isPothole
+          ? "pothole_dots"
+          : isHotspot ? "centre_dots" : "student_dots";
 
         // Preserve UUIDs by email
         const { data: existingDots } = await supabase.from(table).select("id, email");
@@ -301,9 +304,11 @@ Deno.serve(async (req) => {
         let skippedCount = 0;
 
         for (const r of dataRows) {
-          const name = isHotspot
-            ? getField(r, ["name", "hotspot_name", "blackspot_name", "spot_name", "location_name", "junction", "police_station", "accident_spot", "ps_name"])
-            : getField(r, ["name", "facility_name", "service_name", "provider_name", "hospital_name", "company_name", "rep_name"]);
+          const name = isPothole
+            ? getField(r, ["name", "pothole_name", "spot_name", "location_name", "junction", "landmark"])
+            : isHotspot
+              ? getField(r, ["name", "hotspot_name", "blackspot_name", "spot_name", "location_name", "junction", "police_station", "accident_spot", "ps_name"])
+              : getField(r, ["name", "facility_name", "service_name", "provider_name", "hospital_name", "company_name", "rep_name"]);
 
           const area = getField(r, ["area", "ward", "locality", "address", "location", "pincode", "zone", "police_station", "accident_spot", "road_class"]);
           const rawLat = Number(getField(r, ["lat", "latitude"]));
@@ -330,7 +335,29 @@ Deno.serve(async (req) => {
           const safeEmail = normalizedEmail && !seenEmails.has(normalizedEmail) ? normalizedEmail : null;
           if (safeEmail) seenEmails.add(safeEmail);
 
-          if (isHotspot) {
+          if (isPothole) {
+            // ─── Pothole → pothole_dots ───
+            const sev = normalizeRisk(getField(r, ["severity", "risk_level", "risk", "grade"]));
+            inserts.push({
+              name,
+              area: area || "Unknown",
+              icon: "circle-dot",
+              lat, lng,
+              contact: phone || "direct",
+              email: safeEmail,
+              description: getField(r, ["description", "notes"]) || null,
+              severity: sev,
+              road_class: getField(r, ["road_class", "road_type", "highway_class", "road_category"]) || null,
+              size: getField(r, ["size", "pothole_size", "diameter"]) || null,
+              depth: getField(r, ["depth", "pothole_depth"]) || null,
+              status: getField(r, ["status", "repair_status", "fix_status"]) || null,
+              reported_by: getField(r, ["reported_by", "reporter", "reported_by_name"]) || null,
+              reported_on: getField(r, ["reported_on", "reported_date", "date_reported", "date"]) || null,
+              remarks: getField(r, ["remarks", "comments"]) || null,
+              address: getField(r, ["address", "full_address", "landmark"]) || null,
+              unique_id: getField(r, ["unique_id", "ids", "sr_no"]) || null,
+            });
+          } else if (isHotspot) {
             // ─── Accident Hotspot → centre_dots ───
             const risk = normalizeRisk(getField(r, ["risk_level", "risk", "severity", "blackspot_grade"]));
             inserts.push({

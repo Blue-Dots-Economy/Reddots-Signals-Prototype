@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import {
   ArrowLeft, Upload, Plus, Trash2, Search, Edit2, MapPin,
-  CircleDot, Hospital, AlertTriangle,
+  CircleDot, Hospital, AlertTriangle, Construction,
 } from "lucide-react";
 import { toast } from "sonner";
 import { geocodeAddressDetailed, jitterCoords, delay } from "@/lib/geocode";
@@ -15,10 +15,11 @@ import GoogleSheetSync from "@/components/sheets/GoogleSheetSync";
 
 const RED = "#DC143C";
 const GREY = "#4A4A4A";
+const ORANGE = "#EA580C";
 const MAX_DOTS_ON_MAP = 50;
 const RISK_RANK: Record<string, number> = { CRITICAL: 0, HIGH: 1, MODERATE: 2, LOW: 3 };
 
-type DotMode = "service" | "hotspot";
+type DotMode = "service" | "hotspot" | "pothole";
 
 // student_dots is repurposed for service providers
 interface ServiceDot {
@@ -53,9 +54,29 @@ interface HotspotDot {
   created_at: string;
 }
 
+// pothole_dots stores potholes
+interface PotholeDot {
+  id: string; name: string; area: string;
+  icon: string;
+  lat: number; lng: number;
+  contact: string; email: string | null;
+  description: string | null;
+  severity: string | null;
+  road_class: string | null;
+  size: string | null;
+  depth: string | null;
+  status: string | null;
+  reported_by: string | null;
+  reported_on: string | null;
+  remarks: string | null;
+  created_at: string;
+}
+
 const SERVICE_CATEGORIES = ["hospital", "ambulance", "mechanic", "tow", "ssm", "fuel"];
 const SERVICE_TYPES = ["Government", "Private", "Volunteer"];
 const RISK_LEVELS = ["CRITICAL", "HIGH", "MODERATE"];
+const SEVERITY_LEVELS = ["CRITICAL", "HIGH", "MODERATE", "LOW"];
+const POTHOLE_STATUSES = ["reported", "in-progress", "fixed"];
 
 const ManageDots = () => {
   const navigate = useNavigate();
@@ -63,6 +84,7 @@ const ManageDots = () => {
   const [mode, setMode] = useState<DotMode>("service");
   const [services, setServices] = useState<ServiceDot[]>([]);
   const [hotspots, setHotspots] = useState<HotspotDot[]>([]);
+  const [potholes, setPotholes] = useState<PotholeDot[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState("");
   const [showAddForm, setShowAddForm] = useState(false);
@@ -75,17 +97,20 @@ const ManageDots = () => {
   useEffect(() => { if (!user && !authLoading) navigate("/admin-login"); }, [user, authLoading, navigate]);
   useEffect(() => { setSelectedIds(new Set()); setEditingDot(null); setShowAddForm(false); fetchDots(); }, [mode]);
 
-  const tableForMode = (): "student_dots" | "centre_dots" =>
-    mode === "service" ? "student_dots" : "centre_dots";
+  const tableForMode = (): "student_dots" | "centre_dots" | "pothole_dots" =>
+    mode === "service" ? "student_dots" : mode === "hotspot" ? "centre_dots" : "pothole_dots";
 
   const fetchDots = async () => {
     setLoading(true);
     if (mode === "service") {
       const { data } = await supabase.from("student_dots").select("*").order("created_at", { ascending: false });
       setServices((data as unknown as ServiceDot[]) || []);
-    } else {
+    } else if (mode === "hotspot") {
       const { data } = await supabase.from("centre_dots").select("*").order("created_at", { ascending: false });
       setHotspots((data as unknown as HotspotDot[]) || []);
+    } else {
+      const { data } = await supabase.from("pothole_dots").select("*").order("created_at", { ascending: false });
+      setPotholes((data as unknown as PotholeDot[]) || []);
     }
     setLoading(false);
   };
@@ -184,7 +209,7 @@ const ManageDots = () => {
             needs: getField(r, ["cost", "cost_range", "needs"]) || null,
             other_help: getField(r, ["golden_hour", "other_help"]) || null,
           });
-        } else {
+        } else if (mode === "hotspot") {
           inserts.push({
             name: name || "Unknown", area, lat, lng,
             email: getField(r, ["email"]) || null,
@@ -198,6 +223,23 @@ const ManageDots = () => {
             work_experience_years: getField(r, ["injured", "work_experience_years"]) || null,
             rating: getField(r, ["fatality_rate", "rating"]) || null,
             services: getField(r, ["top_collision", "collision_type", "services"]) || null,
+          });
+        } else {
+          inserts.push({
+            name: name || "Unknown", area, lat, lng,
+            email: getField(r, ["email"]) || null,
+            description: getField(r, ["description"]) || null,
+            icon: "circle-dot",
+            contact: getField(r, ["contact", "phone"]) || "direct",
+            severity: (getField(r, ["severity", "risk_level", "risk"]) || "MODERATE").toUpperCase(),
+            road_class: getField(r, ["road_class", "road_type"]) || null,
+            size: getField(r, ["size", "pothole_size"]) || null,
+            depth: getField(r, ["depth"]) || null,
+            status: getField(r, ["status", "repair_status"]) || null,
+            reported_by: getField(r, ["reported_by", "reporter"]) || null,
+            reported_on: getField(r, ["reported_on", "date_reported", "date"]) || null,
+            remarks: getField(r, ["remarks", "comments"]) || null,
+            address: getField(r, ["address"]) || null,
           });
         }
       }
@@ -216,13 +258,21 @@ const ManageDots = () => {
     }
   };
 
-  const getCurrentDots = (): any[] => mode === "service" ? services : hotspots;
+  const getCurrentDots = (): any[] =>
+    mode === "service" ? services : mode === "hotspot" ? hotspots : potholes;
 
   const getFilteredDots = (): any[] => {
     const list = getCurrentDots();
     if (!filter.trim()) return list;
     const q = filter.toLowerCase();
-    return list.filter((d: any) => d.name?.toLowerCase().includes(q) || d.area?.toLowerCase().includes(q) || (d.category || "").toLowerCase().includes(q) || (d.relevance || "").toLowerCase().includes(q));
+    return list.filter((d: any) =>
+      d.name?.toLowerCase().includes(q) ||
+      d.area?.toLowerCase().includes(q) ||
+      (d.category || "").toLowerCase().includes(q) ||
+      (d.relevance || "").toLowerCase().includes(q) ||
+      (d.severity || "").toLowerCase().includes(q) ||
+      (d.status || "").toLowerCase().includes(q)
+    );
   };
 
   const getMapDots = () => {
@@ -239,6 +289,10 @@ const ManageDots = () => {
         const accidentsA = Number(a.openings || 0);
         const accidentsB = Number(b.openings || 0);
         if (accidentsA !== accidentsB) return accidentsB - accidentsA;
+      } else if (mode === "pothole") {
+        const sevA = RISK_RANK[(a.severity || "").toUpperCase()] ?? 99;
+        const sevB = RISK_RANK[(b.severity || "").toUpperCase()] ?? 99;
+        if (sevA !== sevB) return sevA - sevB;
       }
 
       return new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime();
@@ -246,8 +300,8 @@ const ManageDots = () => {
 
     return selectDistributedTopN(filteredDots, MAX_DOTS_ON_MAP, compareDots).map((d: any) => ({
       id: d.id, name: d.name, lat: d.lat, lng: d.lng,
-      label: mode === "service" ? d.category : d.relevance,
-      icon: mode === "service" ? (d.icon || d.category) : "warning",
+      label: mode === "service" ? d.category : mode === "hotspot" ? d.relevance : d.severity,
+      icon: mode === "service" ? (d.icon || d.category) : mode === "hotspot" ? "warning" : "circle-dot",
     }));
   };
 
@@ -277,13 +331,28 @@ const ManageDots = () => {
     { key: "lng", label: "Long" },
   ];
 
-  const columns = mode === "service" ? SERVICE_COLUMNS : HOTSPOT_COLUMNS;
+  const POTHOLE_COLUMNS: { key: string; label: string }[] = [
+    { key: "name", label: "Pothole" },
+    { key: "severity", label: "Severity" },
+    { key: "area", label: "Area" },
+    { key: "road_class", label: "Road class" },
+    { key: "size", label: "Size" },
+    { key: "depth", label: "Depth" },
+    { key: "status", label: "Status" },
+    { key: "reported_by", label: "Reported by" },
+    { key: "reported_on", label: "Reported on" },
+    { key: "lat", label: "Lat" },
+    { key: "lng", label: "Long" },
+  ];
+
+  const columns = mode === "service" ? SERVICE_COLUMNS : mode === "hotspot" ? HOTSPOT_COLUMNS : POTHOLE_COLUMNS;
   const filteredDots = getFilteredDots();
-  const accent = mode === "service" ? RED : GREY;
+  const accent = mode === "service" ? RED : mode === "hotspot" ? GREY : ORANGE;
 
   const tabs: { key: DotMode; label: string; icon: any }[] = [
     { key: "service", label: "Service Providers", icon: Hospital },
     { key: "hotspot", label: "Accident Hotspots", icon: AlertTriangle },
+    { key: "pothole", label: "Potholes", icon: Construction },
   ];
 
   return (
@@ -309,7 +378,7 @@ const ManageDots = () => {
           <div className="flex rounded-xl border border-border overflow-hidden w-fit">
             {tabs.map((t) => {
               const Icon = t.icon;
-              const tabAccent = t.key === "service" ? RED : GREY;
+              const tabAccent = t.key === "service" ? RED : t.key === "hotspot" ? GREY : ORANGE;
               return (
                 <button key={t.key} onClick={() => setMode(t.key)} className="px-3 sm:px-4 py-2.5 text-xs sm:text-sm font-semibold transition-all flex items-center gap-1.5" style={mode === t.key ? { background: tabAccent, color: "white" } : { background: "transparent", color: "hsl(var(--muted-foreground))" }}>
                   <Icon size={14} /> {t.label}
@@ -328,9 +397,9 @@ const ManageDots = () => {
           </div>
         </div>
 
-        <GoogleSheetSync mode={mode === "service" ? "student" : "centre"} onSyncComplete={fetchDots} />
+        <GoogleSheetSync mode={mode === "service" ? "student" : mode === "hotspot" ? "centre" : "pothole"} onSyncComplete={fetchDots} />
 
-        <AdminMapPreview title={mode === "service" ? "Service Providers Map" : "Accident Hotspots Map"} dots={getMapDots()} />
+        <AdminMapPreview title={mode === "service" ? "Service Providers Map" : mode === "hotspot" ? "Accident Hotspots Map" : "Potholes Map"} dots={getMapDots()} />
 
         {(showAddForm || editingDot) && (
           <DotForm mode={mode} editDot={editingDot} accent={accent} onSuccess={() => { setShowAddForm(false); setEditingDot(null); fetchDots(); }} onCancel={() => { setShowAddForm(false); setEditingDot(null); }} />
@@ -338,11 +407,11 @@ const ManageDots = () => {
 
         <div className="relative w-full sm:w-80">
           <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
-          <input type="text" placeholder={`Search ${mode === "service" ? "services" : "hotspots"}...`} value={filter} onChange={(e) => setFilter(e.target.value)} className="w-full pl-9 pr-3 py-2.5 rounded-xl border border-input bg-background text-foreground text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring" />
+          <input type="text" placeholder={`Search ${mode === "service" ? "services" : mode === "hotspot" ? "hotspots" : "potholes"}...`} value={filter} onChange={(e) => setFilter(e.target.value)} className="w-full pl-9 pr-3 py-2.5 rounded-xl border border-input bg-background text-foreground text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring" />
         </div>
 
         <div className="flex items-center justify-between">
-          <p className="text-xs text-muted-foreground">{filteredDots.length} {mode === "service" ? "service providers" : "accident hotspots"}</p>
+          <p className="text-xs text-muted-foreground">{filteredDots.length} {mode === "service" ? "service providers" : mode === "hotspot" ? "accident hotspots" : "potholes"}</p>
           {selectedIds.size > 0 && (
             <button onClick={handleBatchDelete} disabled={deleting} className="flex items-center gap-1.5 text-sm font-medium px-4 py-2 rounded-xl text-white transition-colors disabled:opacity-50" style={{ background: "#EF4444" }}>
               <Trash2 size={14} /> {deleting ? "Deleting..." : `Delete ${selectedIds.size} selected`}
@@ -353,7 +422,7 @@ const ManageDots = () => {
         {loading ? (
           <div className="flex items-center justify-center py-20"><div className="animate-spin w-8 h-8 border-4 rounded-full border-t-transparent" style={{ borderColor: `${accent} transparent ${accent} ${accent}` }} /></div>
         ) : filteredDots.length === 0 ? (
-          <div className="text-center py-12 text-sm text-muted-foreground bg-card border border-border rounded-xl">No {mode === "service" ? "services" : "hotspots"} yet. Upload a CSV or add one manually.</div>
+          <div className="text-center py-12 text-sm text-muted-foreground bg-card border border-border rounded-xl">No {mode === "service" ? "services" : mode === "hotspot" ? "hotspots" : "potholes"} yet. Upload a CSV or add one manually.</div>
         ) : (
           <div className="bg-card border border-border rounded-xl overflow-hidden">
             <div className="overflow-x-auto">
@@ -390,9 +459,9 @@ const ManageDots = () => {
                             </div>
                           ) : c.key === "lat" || c.key === "lng" ? (
                             <span>{Number(d[c.key])?.toFixed(4) ?? "—"}</span>
-                          ) : c.key === "relevance" ? (
-                            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full text-white" style={{ background: ((d.relevance || "").toUpperCase() === "CRITICAL") ? "#7F1D1D" : ((d.relevance || "").toUpperCase() === "HIGH") ? RED : "#F59E0B" }}>
-                              {(d.relevance || "—").toUpperCase()}
+                          ) : c.key === "relevance" || c.key === "severity" ? (
+                            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full text-white" style={{ background: ((d[c.key] || "").toUpperCase() === "CRITICAL") ? "#7F1D1D" : ((d[c.key] || "").toUpperCase() === "HIGH") ? RED : ((d[c.key] || "").toUpperCase() === "LOW") ? "#10B981" : "#F59E0B" }}>
+                              {(d[c.key] || "—").toUpperCase()}
                             </span>
                           ) : (
                             <span className="capitalize">{(d[c.key] || "—").toString().replace(/_/g, " ")}</span>
@@ -431,7 +500,7 @@ const DotForm = ({ mode, editDot, accent, onSuccess, onCancel }: {
     needs: editDot?.needs || "",
     other_help: editDot?.other_help || "",
     description: editDot?.description || "",
-  } : {
+  } : mode === "hotspot" ? {
     name: editDot?.name || "",
     area: editDot?.area || "",
     email: editDot?.email || "",
@@ -442,6 +511,20 @@ const DotForm = ({ mode, editDot, accent, onSuccess, onCancel }: {
     work_experience_years: editDot?.work_experience_years || "",
     rating: editDot?.rating || "",
     services: editDot?.services || "",
+    description: editDot?.description || "",
+  } : {
+    name: editDot?.name || "",
+    area: editDot?.area || "",
+    email: editDot?.email || "",
+    contact: editDot?.contact || "",
+    severity: (editDot?.severity || "MODERATE").toUpperCase(),
+    road_class: editDot?.road_class || "",
+    size: editDot?.size || "",
+    depth: editDot?.depth || "",
+    status: editDot?.status || "reported",
+    reported_by: editDot?.reported_by || "",
+    reported_on: editDot?.reported_on || "",
+    remarks: editDot?.remarks || "",
     description: editDot?.description || "",
   };
   const [form, setForm] = useState<Record<string, string>>(initial);
@@ -465,11 +548,14 @@ const DotForm = ({ mode, editDot, accent, onSuccess, onCancel }: {
     if (mode === "service") {
       payload.icon = form.category || "hospital";
       payload.contact = form.contact || "direct";
-    } else {
+    } else if (mode === "hotspot") {
       payload.icon = "warning";
       payload.contact = "direct";
+    } else {
+      payload.icon = "circle-dot";
+      payload.contact = form.contact || "direct";
     }
-    const table = mode === "service" ? "student_dots" : "centre_dots";
+    const table = mode === "service" ? "student_dots" : mode === "hotspot" ? "centre_dots" : "pothole_dots";
     const { error } = editDot
       ? await supabase.from(table).update(payload).eq("id", editDot.id)
       : await supabase.from(table).insert(payload);
@@ -479,10 +565,12 @@ const DotForm = ({ mode, editDot, accent, onSuccess, onCancel }: {
     onSuccess();
   };
 
+  const entityLabel = mode === "service" ? "Service" : mode === "hotspot" ? "Hotspot" : "Pothole";
+
   return (
     <form onSubmit={handleSubmit} className="bg-card border border-border rounded-xl p-4 sm:p-6 space-y-4">
       <h3 className="text-sm font-semibold text-foreground flex items-center gap-2">
-        {editDot ? <><Edit2 size={14} style={{ color: accent }} /> Edit {mode === "service" ? "Service" : "Hotspot"}</> : <><Plus size={14} style={{ color: accent }} /> Add {mode === "service" ? "Service" : "Hotspot"}</>}
+        {editDot ? <><Edit2 size={14} style={{ color: accent }} /> Edit {entityLabel}</> : <><Plus size={14} style={{ color: accent }} /> Add {entityLabel}</>}
       </h3>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
         <Field label="Name *" value={form.name} onChange={(v) => setForm({ ...form, name: v })} />
@@ -499,7 +587,7 @@ const DotForm = ({ mode, editDot, accent, onSuccess, onCancel }: {
             <Field label="Cost Range" value={form.needs} onChange={(v) => setForm({ ...form, needs: v })} />
             <Field label="Golden Hour empanelled" value={form.other_help} onChange={(v) => setForm({ ...form, other_help: v })} placeholder="Yes / No" />
           </>
-        ) : (
+        ) : mode === "hotspot" ? (
           <>
             <SelectField label="Risk Level" value={form.relevance} options={RISK_LEVELS} onChange={(v) => setForm({ ...form, relevance: v })} />
             <Field label="Road Class" value={form.nature_of_job} onChange={(v) => setForm({ ...form, nature_of_job: v })} placeholder="National Highway, etc." />
@@ -508,6 +596,18 @@ const DotForm = ({ mode, editDot, accent, onSuccess, onCancel }: {
             <Field label="Injured" value={form.work_experience_years} onChange={(v) => setForm({ ...form, work_experience_years: v })} />
             <Field label="Fatality Rate %" value={form.rating} onChange={(v) => setForm({ ...form, rating: v })} />
             <Field label="Top Collision Type" value={form.services} onChange={(v) => setForm({ ...form, services: v })} placeholder="Rear-end, Head-on, etc." />
+          </>
+        ) : (
+          <>
+            <SelectField label="Severity" value={form.severity} options={SEVERITY_LEVELS} onChange={(v) => setForm({ ...form, severity: v })} />
+            <Field label="Road Class" value={form.road_class} onChange={(v) => setForm({ ...form, road_class: v })} placeholder="National Highway, etc." />
+            <Field label="Size" value={form.size} onChange={(v) => setForm({ ...form, size: v })} placeholder="small / medium / large" />
+            <Field label="Depth" value={form.depth} onChange={(v) => setForm({ ...form, depth: v })} placeholder="e.g. 12 cm" />
+            <SelectField label="Status" value={form.status} options={POTHOLE_STATUSES} onChange={(v) => setForm({ ...form, status: v })} />
+            <Field label="Reported By" value={form.reported_by} onChange={(v) => setForm({ ...form, reported_by: v })} />
+            <Field label="Reported On" value={form.reported_on} onChange={(v) => setForm({ ...form, reported_on: v })} placeholder="YYYY-MM-DD" />
+            <Field label="Phone (Contact)" value={form.contact} onChange={(v) => setForm({ ...form, contact: v })} />
+            <Field label="Remarks" value={form.remarks} onChange={(v) => setForm({ ...form, remarks: v })} />
           </>
         )}
       </div>

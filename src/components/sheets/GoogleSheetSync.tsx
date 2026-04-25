@@ -5,7 +5,7 @@ import { Sheet, RefreshCw, Trash2, Link2, CheckCircle2, AlertCircle, Clock, Load
 
 const RED = "#DC143C";
 
-type DotMode = "student" | "centre";
+type DotMode = "student" | "centre" | "pothole";
 
 const MODE_META: Record<DotMode, { label: string; pillText: string; helper: React.ReactNode }> = {
   student: {
@@ -29,6 +29,19 @@ const MODE_META: Record<DotMode, { label: string; pillText: string; helper: Reac
         <strong> risk_level</strong> (critical / high / moderate), <strong>road_class</strong>, <strong>total_accidents</strong>,
         <strong> deaths</strong>, <strong>injured</strong>, <strong>fatality_rate</strong>, <strong>top_collision_type</strong>,
         plus optional <strong>lat</strong>/<strong>lng</strong> and <strong>address</strong>.
+      </>
+    ),
+  },
+  pothole: {
+    label: "Potholes",
+    pillText: "Potholes",
+    helper: (
+      <>
+        Link a sheet of <strong>potholes</strong>. Recognised columns: <strong>name</strong>, <strong>area</strong>,
+        <strong> severity</strong> (critical / high / moderate / low), <strong>road_class</strong>,
+        <strong> size</strong>, <strong>depth</strong>, <strong>status</strong> (reported / in-progress / fixed),
+        <strong> reported_by</strong>, <strong>reported_on</strong>, <strong>remarks</strong>,
+        plus optional <strong>lat</strong>/<strong>lng</strong>, <strong>address</strong>, <strong>contact</strong>, <strong>email</strong>.
       </>
     ),
   },
