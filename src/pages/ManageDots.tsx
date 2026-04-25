@@ -500,7 +500,7 @@ const DotForm = ({ mode, editDot, accent, onSuccess, onCancel }: {
     needs: editDot?.needs || "",
     other_help: editDot?.other_help || "",
     description: editDot?.description || "",
-  } : {
+  } : mode === "hotspot" ? {
     name: editDot?.name || "",
     area: editDot?.area || "",
     email: editDot?.email || "",
@@ -511,6 +511,20 @@ const DotForm = ({ mode, editDot, accent, onSuccess, onCancel }: {
     work_experience_years: editDot?.work_experience_years || "",
     rating: editDot?.rating || "",
     services: editDot?.services || "",
+    description: editDot?.description || "",
+  } : {
+    name: editDot?.name || "",
+    area: editDot?.area || "",
+    email: editDot?.email || "",
+    contact: editDot?.contact || "",
+    severity: (editDot?.severity || "MODERATE").toUpperCase(),
+    road_class: editDot?.road_class || "",
+    size: editDot?.size || "",
+    depth: editDot?.depth || "",
+    status: editDot?.status || "reported",
+    reported_by: editDot?.reported_by || "",
+    reported_on: editDot?.reported_on || "",
+    remarks: editDot?.remarks || "",
     description: editDot?.description || "",
   };
   const [form, setForm] = useState<Record<string, string>>(initial);
@@ -534,11 +548,14 @@ const DotForm = ({ mode, editDot, accent, onSuccess, onCancel }: {
     if (mode === "service") {
       payload.icon = form.category || "hospital";
       payload.contact = form.contact || "direct";
-    } else {
+    } else if (mode === "hotspot") {
       payload.icon = "warning";
       payload.contact = "direct";
+    } else {
+      payload.icon = "circle-dot";
+      payload.contact = form.contact || "direct";
     }
-    const table = mode === "service" ? "student_dots" : "centre_dots";
+    const table = mode === "service" ? "student_dots" : mode === "hotspot" ? "centre_dots" : "pothole_dots";
     const { error } = editDot
       ? await supabase.from(table).update(payload).eq("id", editDot.id)
       : await supabase.from(table).insert(payload);
@@ -548,10 +565,12 @@ const DotForm = ({ mode, editDot, accent, onSuccess, onCancel }: {
     onSuccess();
   };
 
+  const entityLabel = mode === "service" ? "Service" : mode === "hotspot" ? "Hotspot" : "Pothole";
+
   return (
     <form onSubmit={handleSubmit} className="bg-card border border-border rounded-xl p-4 sm:p-6 space-y-4">
       <h3 className="text-sm font-semibold text-foreground flex items-center gap-2">
-        {editDot ? <><Edit2 size={14} style={{ color: accent }} /> Edit {mode === "service" ? "Service" : "Hotspot"}</> : <><Plus size={14} style={{ color: accent }} /> Add {mode === "service" ? "Service" : "Hotspot"}</>}
+        {editDot ? <><Edit2 size={14} style={{ color: accent }} /> Edit {entityLabel}</> : <><Plus size={14} style={{ color: accent }} /> Add {entityLabel}</>}
       </h3>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
         <Field label="Name *" value={form.name} onChange={(v) => setForm({ ...form, name: v })} />
@@ -568,7 +587,7 @@ const DotForm = ({ mode, editDot, accent, onSuccess, onCancel }: {
             <Field label="Cost Range" value={form.needs} onChange={(v) => setForm({ ...form, needs: v })} />
             <Field label="Golden Hour empanelled" value={form.other_help} onChange={(v) => setForm({ ...form, other_help: v })} placeholder="Yes / No" />
           </>
-        ) : (
+        ) : mode === "hotspot" ? (
           <>
             <SelectField label="Risk Level" value={form.relevance} options={RISK_LEVELS} onChange={(v) => setForm({ ...form, relevance: v })} />
             <Field label="Road Class" value={form.nature_of_job} onChange={(v) => setForm({ ...form, nature_of_job: v })} placeholder="National Highway, etc." />
@@ -577,6 +596,18 @@ const DotForm = ({ mode, editDot, accent, onSuccess, onCancel }: {
             <Field label="Injured" value={form.work_experience_years} onChange={(v) => setForm({ ...form, work_experience_years: v })} />
             <Field label="Fatality Rate %" value={form.rating} onChange={(v) => setForm({ ...form, rating: v })} />
             <Field label="Top Collision Type" value={form.services} onChange={(v) => setForm({ ...form, services: v })} placeholder="Rear-end, Head-on, etc." />
+          </>
+        ) : (
+          <>
+            <SelectField label="Severity" value={form.severity} options={SEVERITY_LEVELS} onChange={(v) => setForm({ ...form, severity: v })} />
+            <Field label="Road Class" value={form.road_class} onChange={(v) => setForm({ ...form, road_class: v })} placeholder="National Highway, etc." />
+            <Field label="Size" value={form.size} onChange={(v) => setForm({ ...form, size: v })} placeholder="small / medium / large" />
+            <Field label="Depth" value={form.depth} onChange={(v) => setForm({ ...form, depth: v })} placeholder="e.g. 12 cm" />
+            <SelectField label="Status" value={form.status} options={POTHOLE_STATUSES} onChange={(v) => setForm({ ...form, status: v })} />
+            <Field label="Reported By" value={form.reported_by} onChange={(v) => setForm({ ...form, reported_by: v })} />
+            <Field label="Reported On" value={form.reported_on} onChange={(v) => setForm({ ...form, reported_on: v })} placeholder="YYYY-MM-DD" />
+            <Field label="Phone (Contact)" value={form.contact} onChange={(v) => setForm({ ...form, contact: v })} />
+            <Field label="Remarks" value={form.remarks} onChange={(v) => setForm({ ...form, remarks: v })} />
           </>
         )}
       </div>
