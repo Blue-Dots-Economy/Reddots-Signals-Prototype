@@ -69,7 +69,8 @@ function createDotMarker(dot: RedDot, view: RedDotsView, isUserNearest: boolean)
   if (view === "accidents") {
     iconKey = dot.kind === "pothole" ? "pothole" : "warning";
   } else {
-    iconKey = normalizeCategory(dot.iconKey || dot.category);
+    // Prefer category (user-facing label) over iconKey since DB icon column may be stale/wrong
+    iconKey = normalizeCategory(dot.category || dot.iconKey);
   }
   const svgInner = ICON_SVGS[iconKey] || ICON_SVGS.default;
   const fill = dotColorFor(dot, view);
