@@ -62,17 +62,31 @@ const PersonaListView = ({ profile, activeView, dots, filteredDots, activeFilter
 
   return (
     <div className="min-h-[100dvh] bg-background pt-[calc(env(safe-area-inset-top)+3.5rem)] pb-[calc(env(safe-area-inset-bottom)+6rem)] px-3 sm:px-6 safe-px">
-      <div className="max-w-2xl mx-auto">
-        {/* Search */}
-        <div className="relative mb-3">
-          <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
-          <input
-            type="text"
-            value={activeFilters.search || ""}
-            onChange={(e) => onFiltersChange({ ...activeFilters, search: e.target.value || undefined })}
-            placeholder={activeView === "services" ? "Search hospitals, mechanics, areas..." : "Search hotspots, areas..."}
-            className="w-full pl-9 pr-3 py-2.5 bg-card border border-border rounded-xl text-sm placeholder:text-muted-foreground focus:outline-none focus:border-primary/50"
-          />
+      <div className="max-w-5xl mx-auto">
+        {/* Sticky Search */}
+        <div
+          className="sticky z-[10] -mx-3 sm:-mx-6 px-3 sm:px-6 py-2 bg-background/95 backdrop-blur-md"
+          style={{ top: `calc(env(safe-area-inset-top) + 3rem)` }}
+        >
+          <div className="relative">
+            <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+            <input
+              type="text"
+              value={activeFilters.search || ""}
+              onChange={(e) => onFiltersChange({ ...activeFilters, search: e.target.value || undefined })}
+              placeholder={activeView === "services" ? "Search hospitals, mechanics, areas..." : "Search hotspots, areas..."}
+              className="w-full pl-10 pr-10 h-11 bg-card border border-border rounded-xl text-[15px] placeholder:text-muted-foreground focus:outline-none focus:border-primary/50"
+            />
+            {activeFilters.search && (
+              <button
+                onClick={() => onFiltersChange({ ...activeFilters, search: undefined })}
+                aria-label="Clear search"
+                className="tap-44 absolute right-1 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground rounded-full"
+              >
+                <span className="text-lg">×</span>
+              </button>
+            )}
+          </div>
         </div>
 
         {sorted.length === 0 ? (
@@ -87,7 +101,7 @@ const PersonaListView = ({ profile, activeView, dots, filteredDots, activeFilter
             </button>
           </div>
         ) : (
-          <div className="space-y-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 mt-3">
             {sorted.map((dot) => {
               const dist = haversineKm(profile.lat, profile.lng, dot.lat, dot.lng).toFixed(1);
 

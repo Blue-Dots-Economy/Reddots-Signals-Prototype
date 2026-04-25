@@ -102,7 +102,7 @@ const AuthPage = () => {
               <div className="space-y-1.5">
                 <label htmlFor="phone" className="text-sm font-medium text-foreground">Phone Number</label>
                 <div className="flex">
-                  <span className="inline-flex items-center px-3 rounded-l-xl border border-r-0 border-input bg-muted text-sm text-muted-foreground font-medium">
+                  <span className="inline-flex items-center px-3 rounded-l-xl border border-r-0 border-input bg-muted text-base text-muted-foreground font-semibold h-12">
                     +91
                   </span>
                   <input
@@ -113,7 +113,7 @@ const AuthPage = () => {
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
                     maxLength={15}
-                    className="w-full px-4 py-3 rounded-r-xl border border-input bg-background text-foreground text-sm placeholder:text-muted-foreground focus:outline-none input-focus-ring transition-all duration-200"
+                    className="w-full px-4 h-12 rounded-r-xl border border-input bg-background text-foreground text-[18px] tabular-nums placeholder:text-muted-foreground placeholder:text-sm focus:outline-none input-focus-ring transition-all duration-200"
                     autoFocus
                   />
                 </div>
@@ -122,7 +122,7 @@ const AuthPage = () => {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full py-3.5 rounded-xl text-sm font-bold text-white transition-all duration-300 disabled:opacity-50 hover:shadow-lg active:scale-[0.98]"
+                className="tap-44 w-full h-12 rounded-xl text-[15px] font-bold text-white transition-all duration-300 disabled:opacity-50 hover:shadow-lg active:scale-[0.98]"
                 style={{
                   background: `linear-gradient(135deg, ${RED}, #9F0E2E)`,
                   boxShadow: loading ? "none" : `0 4px 14px rgba(220, 20, 60, 0.35)`,
