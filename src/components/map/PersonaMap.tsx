@@ -85,16 +85,7 @@ function createDotMarker(dot: RedDot, view: RedDotsView, isUserNearest: boolean)
 }
 
 function getMarkerPosition(dot: RedDot): { lat: number; lng: number } {
-  if (dot.kind !== "pothole") return { lat: dot.lat, lng: dot.lng };
-
-  const seed = dot.id.split("").reduce((acc, ch) => acc + ch.charCodeAt(0), 0);
-  const angle = (seed % 360) * (Math.PI / 180);
-  const radius = 0.00035;
-
-  return {
-    lat: dot.lat + Math.sin(angle) * radius,
-    lng: dot.lng + Math.cos(angle) * radius,
-  };
+  return { lat: dot.lat, lng: dot.lng };
 }
 
 const PersonaMap = ({ profile, activeView, dots, filteredDots, activeFilters, onFiltersChange }: Props) => {
