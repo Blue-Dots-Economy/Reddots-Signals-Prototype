@@ -134,7 +134,19 @@
   .no-scrollbar::-webkit-scrollbar { display: none; }
 
   /* Minimum 44×44 touch target (Apple HIG / Material) */
-  .tap-44 { min-height: 44px; min-width: 44px; }
+  .tap-44 { min-height: 44px; min-width: 44px; display: inline-flex; align-items: center; justify-content: center; }
+
+  /* Prevent scroll chaining from inner scroll containers to the map/page */
+  .overscroll-contain-strict { overscroll-behavior: contain; -webkit-overflow-scrolling: touch; }
+
+  /* Tabular numerals for phone numbers and counters */
+  .tabular-nums { font-variant-numeric: tabular-nums; }
+
+  /* Right-edge fade for horizontally scrollable chip rows */
+  .chip-row-fade {
+    -webkit-mask-image: linear-gradient(to right, black 88%, transparent 100%);
+    mask-image: linear-gradient(to right, black 88%, transparent 100%);
+  }
 }
 
 @layer utilities {
