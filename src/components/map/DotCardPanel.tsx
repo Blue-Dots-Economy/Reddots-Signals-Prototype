@@ -5,6 +5,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { supabase } from "@/integrations/supabase/client";
 import type { RedDot } from "@/pages/LaunchPage";
 import type { RedDotsView } from "@/lib/phoneAuth";
+import potholeImg from "@/assets/pothole.jpg";
 
 const RED = "#DC143C";
 const GREY = "#4A4A4A";
