@@ -1,6 +1,6 @@
 /**
  * Geocode an address string to lat/lng using OpenStreetMap Nominatim (free, no API key).
- * Falls back to a default location near Ghaziabad if geocoding fails.
+ * Falls back to a default location near Guwahati if geocoding fails.
  */
 const FALLBACK = { lat: 26.1445, lng: 91.7362 };
 

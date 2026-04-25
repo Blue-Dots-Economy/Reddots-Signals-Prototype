@@ -4,7 +4,7 @@ import { useGoogleMaps, CLEAN_MAP_STYLE } from "@/hooks/useGoogleMaps";
 
 const YELLOW = "#DC143C";
 const YELLOW_GLOW = "rgba(220,20,60,0.4)";
-const GHAZIABAD_CENTER = { lat: 18.5204, lng: 73.8567 };
+const GUWAHATI_CENTER = { lat: 26.1445, lng: 91.7362 };
 const DEFAULT_ZOOM = 12;
 
 // Lucide icon SVG inner paths (24x24 viewBox)
@@ -95,7 +95,7 @@ const AdminMapPreview = ({ dots, title }: Props) => {
 
     if (!mapInstanceRef.current) {
       const map = new g.maps.Map(mapRef.current, {
-        center: GHAZIABAD_CENTER,
+        center: GUWAHATI_CENTER,
         zoom: DEFAULT_ZOOM,
         zoomControl: true,
         disableDefaultUI: true,
