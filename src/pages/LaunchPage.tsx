@@ -234,8 +234,18 @@ const LaunchPage = () => {
       return da - db;
     };
 
+    // Always include all potholes (they are rare citizen reports), then fill remaining
+    // slots with distributed top-N hotspots/services so grey dots are never crowded out.
+    if (activeView === "accidents") {
+      const potholes = matched.filter((d) => d.kind === "pothole");
+      const others = matched.filter((d) => d.kind !== "pothole");
+      const remaining = Math.max(0, MAX_DOTS_ON_MAP - potholes.length);
+      const topOthers = selectDistributedTopN(others, remaining, compareDots);
+      return [...topOthers, ...potholes];
+    }
+
     return selectDistributedTopN(matched, MAX_DOTS_ON_MAP, compareDots);
-  }, [dots, activeFilters, profile]);
+  }, [dots, activeFilters, profile, activeView]);
 
   if (!profile) {
     return (
