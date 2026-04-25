@@ -54,9 +54,29 @@ interface HotspotDot {
   created_at: string;
 }
 
+// pothole_dots stores potholes
+interface PotholeDot {
+  id: string; name: string; area: string;
+  icon: string;
+  lat: number; lng: number;
+  contact: string; email: string | null;
+  description: string | null;
+  severity: string | null;
+  road_class: string | null;
+  size: string | null;
+  depth: string | null;
+  status: string | null;
+  reported_by: string | null;
+  reported_on: string | null;
+  remarks: string | null;
+  created_at: string;
+}
+
 const SERVICE_CATEGORIES = ["hospital", "ambulance", "mechanic", "tow", "ssm", "fuel"];
 const SERVICE_TYPES = ["Government", "Private", "Volunteer"];
 const RISK_LEVELS = ["CRITICAL", "HIGH", "MODERATE"];
+const SEVERITY_LEVELS = ["CRITICAL", "HIGH", "MODERATE", "LOW"];
+const POTHOLE_STATUSES = ["reported", "in-progress", "fixed"];
 
 const ManageDots = () => {
   const navigate = useNavigate();
