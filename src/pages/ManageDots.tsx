@@ -397,9 +397,9 @@ const ManageDots = () => {
           </div>
         </div>
 
-        <GoogleSheetSync mode={mode === "service" ? "student" : "centre"} onSyncComplete={fetchDots} />
+        <GoogleSheetSync mode={mode === "service" ? "student" : mode === "hotspot" ? "centre" : "pothole"} onSyncComplete={fetchDots} />
 
-        <AdminMapPreview title={mode === "service" ? "Service Providers Map" : "Accident Hotspots Map"} dots={getMapDots()} />
+        <AdminMapPreview title={mode === "service" ? "Service Providers Map" : mode === "hotspot" ? "Accident Hotspots Map" : "Potholes Map"} dots={getMapDots()} />
 
         {(showAddForm || editingDot) && (
           <DotForm mode={mode} editDot={editingDot} accent={accent} onSuccess={() => { setShowAddForm(false); setEditingDot(null); fetchDots(); }} onCancel={() => { setShowAddForm(false); setEditingDot(null); }} />
@@ -407,11 +407,11 @@ const ManageDots = () => {
 
         <div className="relative w-full sm:w-80">
           <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
-          <input type="text" placeholder={`Search ${mode === "service" ? "services" : "hotspots"}...`} value={filter} onChange={(e) => setFilter(e.target.value)} className="w-full pl-9 pr-3 py-2.5 rounded-xl border border-input bg-background text-foreground text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring" />
+          <input type="text" placeholder={`Search ${mode === "service" ? "services" : mode === "hotspot" ? "hotspots" : "potholes"}...`} value={filter} onChange={(e) => setFilter(e.target.value)} className="w-full pl-9 pr-3 py-2.5 rounded-xl border border-input bg-background text-foreground text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring" />
         </div>
 
         <div className="flex items-center justify-between">
-          <p className="text-xs text-muted-foreground">{filteredDots.length} {mode === "service" ? "service providers" : "accident hotspots"}</p>
+          <p className="text-xs text-muted-foreground">{filteredDots.length} {mode === "service" ? "service providers" : mode === "hotspot" ? "accident hotspots" : "potholes"}</p>
           {selectedIds.size > 0 && (
             <button onClick={handleBatchDelete} disabled={deleting} className="flex items-center gap-1.5 text-sm font-medium px-4 py-2 rounded-xl text-white transition-colors disabled:opacity-50" style={{ background: "#EF4444" }}>
               <Trash2 size={14} /> {deleting ? "Deleting..." : `Delete ${selectedIds.size} selected`}
