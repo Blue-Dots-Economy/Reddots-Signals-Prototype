@@ -304,9 +304,11 @@ Deno.serve(async (req) => {
         let skippedCount = 0;
 
         for (const r of dataRows) {
-          const name = isHotspot
-            ? getField(r, ["name", "hotspot_name", "blackspot_name", "spot_name", "location_name", "junction", "police_station", "accident_spot", "ps_name"])
-            : getField(r, ["name", "facility_name", "service_name", "provider_name", "hospital_name", "company_name", "rep_name"]);
+          const name = isPothole
+            ? getField(r, ["name", "pothole_name", "spot_name", "location_name", "junction", "landmark"])
+            : isHotspot
+              ? getField(r, ["name", "hotspot_name", "blackspot_name", "spot_name", "location_name", "junction", "police_station", "accident_spot", "ps_name"])
+              : getField(r, ["name", "facility_name", "service_name", "provider_name", "hospital_name", "company_name", "rep_name"]);
 
           const area = getField(r, ["area", "ward", "locality", "address", "location", "pincode", "zone", "police_station", "accident_spot", "road_class"]);
           const rawLat = Number(getField(r, ["lat", "latitude"]));
