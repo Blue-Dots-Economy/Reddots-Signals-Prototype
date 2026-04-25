@@ -234,6 +234,17 @@ const DotCardPanel = ({ dot, activeView, anchorPos, onClose }: Props) => {
           <X size={22} />
         </button>
 
+        {dot.kind === "pothole" && (
+          <div className="-mx-5 -mt-5 mb-4 overflow-hidden sm:rounded-t-2xl">
+            <img
+              src={potholeImg}
+              alt="Pothole on road"
+              className="w-full h-40 object-cover"
+              loading="lazy"
+            />
+          </div>
+        )}
+
         <div className="pr-8 mb-3">
           <p className="text-lg font-bold text-gray-900 leading-tight">{dot.name}</p>
           <div className="flex items-center gap-2 mt-1.5 flex-wrap">
