@@ -217,7 +217,7 @@ const PersonaFilterTerminal = ({ activeView, activeFilters, onFiltersChange, vis
   return (
     <div ref={panelRef} style={containerStyle} className={`z-[1000] map-panel p-3 sm:p-4 ${isMobile ? "" : "w-72 max-w-[320px]"} flex flex-col`}>
       {/* Header */}
-      <div className="flex items-center justify-between mb-3 flex-shrink-0">
+      <div className={`flex items-center justify-between mb-3 flex-shrink-0 ${isMobile ? "pr-12" : ""}`}>
         <div className="flex items-center gap-2">
           {!isMobile && (
             <div onMouseDown={handleMouseDown} className="cursor-grab active:cursor-grabbing opacity-40 hover:opacity-80 transition-opacity"><GripVertical size={16} /></div>
@@ -229,8 +229,8 @@ const PersonaFilterTerminal = ({ activeView, activeFilters, onFiltersChange, vis
             </span>
           )}
         </div>
-        <button onClick={() => setCollapsed(true)} className="tap-44 inline-flex items-center justify-center opacity-50 hover:opacity-100 transition-opacity" aria-label="Minimize filters">
-          <Minus size={18} />
+        <button onClick={() => setCollapsed(true)} className="tap-44 inline-flex items-center justify-center opacity-70 hover:opacity-100 transition-opacity rounded-full bg-white/10 hover:bg-white/20" aria-label="Minimize filters">
+          <X size={18} />
         </button>
       </div>
 
