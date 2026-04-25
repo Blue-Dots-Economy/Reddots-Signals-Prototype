@@ -405,17 +405,13 @@ const PersonaFilterTerminal = ({ activeView, activeFilters, onFiltersChange, vis
         </div>
       </div>
 
-      {/* Footer — fixed at bottom of panel */}
-      <div className="flex items-center justify-between pt-3 mt-2 border-t border-white/10 flex-shrink-0">
-        <p className="text-[11px] opacity-70 font-medium">
-          {visibleCount} <span className="opacity-50">of</span> {totalCount}
-        </p>
-        {filterCount > 0 && (
+      {filterCount > 0 && (
+        <div className="flex items-center justify-end pt-3 mt-2 border-t border-white/10 flex-shrink-0">
           <button onClick={clearAll} className="text-[11px] underline opacity-60 hover:opacity-100 transition-opacity">
             Clear all
           </button>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 };
