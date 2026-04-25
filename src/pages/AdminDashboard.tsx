@@ -10,6 +10,7 @@ import {
   ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid,
   PieChart, Pie, Cell, Legend,
 } from "recharts";
+import AccidentHeatmapCard from "@/components/admin/AccidentHeatmapCard";
 
 const RED = "#DC143C";
 const GREY = "#4A4A4A";
