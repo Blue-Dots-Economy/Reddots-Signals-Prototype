@@ -216,8 +216,8 @@ const AdminDashboard = () => {
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
               <StatCard icon={<Hospital size={18} />} accent={RED} label="Service Providers" value={services.length} sub="across all categories" />
               <StatCard icon={<Activity size={18} />} accent={RED} label="Open 24×7" value={open24x7} sub={`${services.length ? Math.round((open24x7 / services.length) * 100) : 0}% of total`} />
-              <StatCard icon={<AlertTriangle size={18} />} accent={GREY} label="Accident Hotspots" value={hotspots.length} sub="iRAD entries" />
-              <StatCard icon={<BarChart3 size={18} />} accent={GREY} label="Total Recorded" value={totalAccidents} sub={`${totalDeaths} deaths`} />
+              <StatCard icon={<AlertTriangle size={18} />} accent={GREY} label="Accident Hotspots" value={hotspots.length} sub="from sheet sync" />
+              <StatCard icon={<BarChart3 size={18} />} accent={GREY} label="Total Accidents" value={totalAccidents} sub={`${totalDeaths} deaths recorded`} />
             </div>
 
             {/* Two-column breakdown */}
