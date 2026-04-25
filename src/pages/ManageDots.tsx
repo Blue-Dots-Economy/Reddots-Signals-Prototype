@@ -331,13 +331,28 @@ const ManageDots = () => {
     { key: "lng", label: "Long" },
   ];
 
-  const columns = mode === "service" ? SERVICE_COLUMNS : HOTSPOT_COLUMNS;
+  const POTHOLE_COLUMNS: { key: string; label: string }[] = [
+    { key: "name", label: "Pothole" },
+    { key: "severity", label: "Severity" },
+    { key: "area", label: "Area" },
+    { key: "road_class", label: "Road class" },
+    { key: "size", label: "Size" },
+    { key: "depth", label: "Depth" },
+    { key: "status", label: "Status" },
+    { key: "reported_by", label: "Reported by" },
+    { key: "reported_on", label: "Reported on" },
+    { key: "lat", label: "Lat" },
+    { key: "lng", label: "Long" },
+  ];
+
+  const columns = mode === "service" ? SERVICE_COLUMNS : mode === "hotspot" ? HOTSPOT_COLUMNS : POTHOLE_COLUMNS;
   const filteredDots = getFilteredDots();
-  const accent = mode === "service" ? RED : GREY;
+  const accent = mode === "service" ? RED : mode === "hotspot" ? GREY : ORANGE;
 
   const tabs: { key: DotMode; label: string; icon: any }[] = [
     { key: "service", label: "Service Providers", icon: Hospital },
     { key: "hotspot", label: "Accident Hotspots", icon: AlertTriangle },
+    { key: "pothole", label: "Potholes", icon: Construction },
   ];
 
   return (
