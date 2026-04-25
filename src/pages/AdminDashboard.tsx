@@ -65,15 +65,35 @@ const AdminDashboard = () => {
 
   useEffect(() => {
     let alive = true;
+
+    // Supabase caps each query at 1000 rows; paginate to fetch the entire sheet.
+    const fetchAllRows = async <T,>(table: "student_dots" | "centre_dots", select: string): Promise<T[]> => {
+      const PAGE = 1000;
+      const all: T[] = [];
+      let from = 0;
+      while (true) {
+        const { data, error } = await supabase
+          .from(table)
+          .select(select)
+          .order("created_at", { ascending: false })
+          .range(from, from + PAGE - 1);
+        if (error || !data || data.length === 0) break;
+        all.push(...(data as any));
+        if (data.length < PAGE) break;
+        from += PAGE;
+      }
+      return all;
+    };
+
     const fetchAll = async () => {
       setLoading(true);
-      const [{ data: svc }, { data: hot }] = await Promise.all([
-        supabase.from("student_dots").select("id,name,area,category,pillar,availability,contact,created_at").order("created_at", { ascending: false }),
-        supabase.from("centre_dots").select("id,name,area,relevance,nature_of_job,openings,job_role_salary,rating,created_at").order("created_at", { ascending: false }),
+      const [svc, hot] = await Promise.all([
+        fetchAllRows<ServiceRow>("student_dots", "id,name,area,category,pillar,availability,contact,created_at"),
+        fetchAllRows<HotspotRow>("centre_dots", "id,name,area,relevance,nature_of_job,openings,job_role_salary,rating,created_at"),
       ]);
       if (!alive) return;
-      setServices((svc as any) || []);
-      setHotspots((hot as any) || []);
+      setServices(svc);
+      setHotspots(hot);
       setLoading(false);
     };
     fetchAll();
@@ -196,8 +216,8 @@ const AdminDashboard = () => {
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
               <StatCard icon={<Hospital size={18} />} accent={RED} label="Service Providers" value={services.length} sub="across all categories" />
               <StatCard icon={<Activity size={18} />} accent={RED} label="Open 24×7" value={open24x7} sub={`${services.length ? Math.round((open24x7 / services.length) * 100) : 0}% of total`} />
-              <StatCard icon={<AlertTriangle size={18} />} accent={GREY} label="Accident Hotspots" value={hotspots.length} sub="iRAD entries" />
-              <StatCard icon={<BarChart3 size={18} />} accent={GREY} label="Total Recorded" value={totalAccidents} sub={`${totalDeaths} deaths`} />
+              <StatCard icon={<AlertTriangle size={18} />} accent={GREY} label="Accident Hotspots" value={hotspots.length} sub="from sheet sync" />
+              <StatCard icon={<BarChart3 size={18} />} accent={GREY} label="Total Accidents" value={totalAccidents} sub={`${totalDeaths} deaths recorded`} />
             </div>
 
             {/* Two-column breakdown */}
