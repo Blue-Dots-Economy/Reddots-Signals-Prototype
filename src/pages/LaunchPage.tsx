@@ -188,7 +188,7 @@ const LaunchPage = () => {
 
   const dots: RedDot[] = activeView === "accidents" ? hotspots : services;
 
-  const MAX_DOTS_ON_MAP = 50;
+  const MAX_DOTS_ON_MAP = 200;
   const RISK_RANK: Record<string, number> = { CRITICAL: 0, HIGH: 1, MODERATE: 2, LOW: 3 };
 
   const filteredDots = useMemo(() => {
