@@ -323,23 +323,7 @@ const AdminDashboard = () => {
                 )}
               </Panel>
 
-              <Panel title="Service Mix" icon={<PieIcon size={16} style={{ color: RED }} />}>
-                {servicesByCategory.length === 0 ? (
-                  <EmptyState text="No services to chart yet." />
-                ) : (
-                  <div style={{ width: "100%", height: 280 }}>
-                    <ResponsiveContainer>
-                      <PieChart>
-                        <Tooltip contentStyle={{ fontSize: 12, borderRadius: 8 }} />
-                        <Legend wrapperStyle={{ fontSize: 11 }} />
-                        <Pie data={servicesByCategory} dataKey="value" nameKey="name" innerRadius={50} outerRadius={90} paddingAngle={2}>
-                          {servicesByCategory.map((d, i) => <Cell key={i} fill={d.color} />)}
-                        </Pie>
-                      </PieChart>
-                    </ResponsiveContainer>
-                  </div>
-                )}
-              </Panel>
+              <AccidentHeatmapCard points={heatmapPoints} />
             </div>
 
             <Panel title="Top 10 Deadliest Hotspots" icon={<TrendingUp size={16} style={{ color: GREY }} />}>
