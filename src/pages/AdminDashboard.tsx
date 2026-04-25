@@ -34,6 +34,8 @@ interface HotspotRow {
   openings: string | null;        // total accidents
   job_role_salary: string | null; // deaths
   rating: string | null;          // fatality rate
+  lat: number | null;
+  lng: number | null;
   created_at: string;
 }
 
