@@ -115,6 +115,48 @@ const AccidentHeatmapCard = ({ points }: Props) => {
           </div>
         )}
       </div>
+
+      {/* Legend */}
+      <div className="mt-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+        <div className="flex items-center gap-2">
+          <span className="text-[11px] font-medium text-muted-foreground uppercase tracking-wide">
+            Density
+          </span>
+          <div className="flex flex-col gap-0.5">
+            <div
+              className="h-2.5 w-44 rounded-full"
+              style={{
+                background:
+                  "linear-gradient(to right, rgba(255,235,200,0.9), rgba(255,200,120,1), rgba(255,140,60,1), rgba(240,80,40,1), rgba(200,20,20,1), rgba(127,29,29,1))",
+              }}
+            />
+            <div className="flex justify-between w-44 text-[10px] text-muted-foreground">
+              <span>Low</span>
+              <span>High</span>
+            </div>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-3 flex-wrap">
+          <span className="text-[11px] font-medium text-muted-foreground uppercase tracking-wide">
+            Risk
+          </span>
+          {[
+            { label: "Critical", color: "#7F1D1D" },
+            { label: "High", color: "#DC143C" },
+            { label: "Moderate", color: "#F59E0B" },
+            { label: "Low", color: "#FCD34D" },
+          ].map((r) => (
+            <div key={r.label} className="flex items-center gap-1.5">
+              <span
+                className="inline-block w-2.5 h-2.5 rounded-full"
+                style={{ background: r.color }}
+              />
+              <span className="text-[11px] text-foreground">{r.label}</span>
+            </div>
+          ))}
+        </div>
+      </div>
     </div>
   );
 };
