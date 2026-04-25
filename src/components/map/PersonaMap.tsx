@@ -1,6 +1,6 @@
 /// <reference types="google.maps" />
 
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState, useEffect, useMemo } from "react";
 import { useGoogleMaps, CLEAN_MAP_STYLE } from "@/hooks/useGoogleMaps";
 import { MIN_ZOOM, MAX_ZOOM } from "@/lib/mapData";
 import ZoomControls from "./ZoomControls";
@@ -92,6 +92,10 @@ const PersonaMap = ({ profile, activeView, dots, filteredDots, activeFilters, on
   const [mapReady, setMapReady] = useState(false);
   const [selectedDot, setSelectedDot] = useState<RedDot | null>(null);
   const [dotScreenPos, setDotScreenPos] = useState<{ x: number; y: number } | null>(null);
+  const orderedDots = useMemo(() => {
+    if (activeView !== "accidents") return filteredDots;
+    return [...filteredDots].sort((a, b) => Number(a.kind === "pothole") - Number(b.kind === "pothole"));
+  }, [activeView, filteredDots]);
 
   useEffect(() => {
     if (!mapRef.current || mapInstance.current || !mapsReady) return;
@@ -133,12 +137,13 @@ const PersonaMap = ({ profile, activeView, dots, filteredDots, activeFilters, on
     markersRef.current.forEach((m: any) => (m.map = null));
     markersRef.current = [];
 
-    filteredDots.forEach((dot) => {
+    orderedDots.forEach((dot) => {
       const content = createDotMarker(dot, activeView, false);
       const marker = new g.maps.marker.AdvancedMarkerElement({
         map,
         position: { lat: dot.lat, lng: dot.lng },
         content,
+        zIndex: dot.kind === "pothole" ? 3000 : 2000,
       });
       const open = () => {
         const rect = content.getBoundingClientRect();
@@ -149,7 +154,7 @@ const PersonaMap = ({ profile, activeView, dots, filteredDots, activeFilters, on
       marker.addEventListener("gmp-click", open);
       markersRef.current.push(marker);
     });
-  }, [filteredDots, mapReady, activeView]);
+  }, [orderedDots, mapReady, activeView]);
 
   const handleZoomIn = () => { const m = mapInstance.current; if (m) m.setZoom((m.getZoom() || 12) + 1); };
   const handleZoomOut = () => { const m = mapInstance.current; if (m) m.setZoom((m.getZoom() || 12) - 1); };
