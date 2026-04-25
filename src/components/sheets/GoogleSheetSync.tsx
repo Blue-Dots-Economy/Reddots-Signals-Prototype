@@ -5,7 +5,7 @@ import { Sheet, RefreshCw, Trash2, Link2, CheckCircle2, AlertCircle, Clock, Load
 
 const RED = "#DC143C";
 
-type DotMode = "student" | "centre";
+type DotMode = "student" | "centre" | "pothole";
 
 const MODE_META: Record<DotMode, { label: string; pillText: string; helper: React.ReactNode }> = {
   student: {
