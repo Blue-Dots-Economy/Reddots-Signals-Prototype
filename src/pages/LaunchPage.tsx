@@ -53,6 +53,60 @@ export interface RedDot {
   raw: Record<string, any>;
 }
 
+const mapServiceRow = (r: any): RedDot => ({
+  id: r.id,
+  name: r.name,
+  area: r.area,
+  lat: r.lat,
+  lng: r.lng,
+  contact: r.contact,
+  description: r.description,
+  category: r.category || r.icon || "hospital",
+  type: r.pillar || "Private",
+  availability: r.availability,
+  speciality: r.skills,
+  costRange: r.needs,
+  goldenHour: r.other_help,
+  kind: "service",
+  iconKey: r.icon,
+  raw: r,
+});
+
+const mapHotspotRow = (r: any): RedDot => ({
+  id: r.id,
+  name: r.name,
+  area: r.area,
+  lat: r.lat,
+  lng: r.lng,
+  contact: r.contact,
+  description: r.description,
+  totalAccidents: r.openings,
+  deaths: r.job_role_salary,
+  injured: r.work_experience_years,
+  fatalityRate: r.rating,
+  riskLevel: r.relevance,
+  roadClass: r.nature_of_job,
+  topCollision: r.services,
+  kind: "hotspot",
+  iconKey: "warning",
+  raw: r,
+});
+
+const mapPotholeRow = (r: any): RedDot => ({
+  id: r.id,
+  name: r.name,
+  area: r.area,
+  lat: r.lat,
+  lng: r.lng,
+  contact: r.contact,
+  description: r.description,
+  riskLevel: r.severity,
+  roadClass: r.road_class,
+  kind: "pothole",
+  iconKey: "pothole",
+  raw: r,
+});
+
 const LaunchPage = () => {
   const navigate = useNavigate();
   const [profile, setProfile] = useState<UserProfile | null>(() => loadProfile());
@@ -77,90 +131,40 @@ const LaunchPage = () => {
     if (!profile) return;
     let alive = true;
 
-    (async () => {
-      const { data: services } = await supabase.from("student_dots").select("*");
-      if (!alive || !services) return;
-      setServices(
-        services.map((r: any): RedDot => ({
-          id: r.id,
-          name: r.name,
-          area: r.area,
-          lat: r.lat,
-          lng: r.lng,
-          contact: r.contact,
-          description: r.description,
-          category: r.category || r.icon || "hospital",
-          type: r.pillar || "Private",
-          availability: r.availability,
-          speciality: r.skills,
-          costRange: r.needs,
-          goldenHour: r.other_help,
-          kind: "service",
-          iconKey: r.icon,
-          raw: r,
-        }))
-      );
-    })();
+    const loadServices = async () => {
+      const { data } = await supabase.from("student_dots").select("*").order("created_at", { ascending: false });
+      if (!alive || !data) return;
+      setServices(data.map(mapServiceRow));
+    };
 
-    (async () => {
-      const { data: hotspots } = await supabase.from("centre_dots").select("*");
-      if (!alive || !hotspots) return;
-      setHotspots(
-        hotspots.map((r: any): RedDot => ({
-          id: r.id,
-          name: r.name,
-          area: r.area,
-          lat: r.lat,
-          lng: r.lng,
-          contact: r.contact,
-          description: r.description,
-          totalAccidents: r.openings,
-          deaths: r.job_role_salary,
-          injured: r.work_experience_years,
-          fatalityRate: r.rating,
-          riskLevel: r.relevance,
-          roadClass: r.nature_of_job,
-          topCollision: r.services,
-          kind: (r.kind === "pothole" ? "pothole" : "hotspot"),
-          iconKey: r.kind === "pothole" ? "warning" : "warning",
-          raw: r,
-        }))
-      );
-    })();
+    const loadAccidentDots = async () => {
+      const [{ data: hotspotRows }, { data: potholeRows }] = await Promise.all([
+        supabase.from("centre_dots").select("*").order("created_at", { ascending: false }),
+        supabase.from("pothole_dots").select("*").order("created_at", { ascending: false }),
+      ]);
+
+      if (!alive) return;
+
+      setHotspots([
+        ...(hotspotRows ?? []).map(mapHotspotRow),
+        ...(potholeRows ?? []).map(mapPotholeRow),
+      ]);
+    };
+
+    loadServices();
+    loadAccidentDots();
 
     // Realtime
     const channel = supabase
       .channel("red_dots_data")
       .on("postgres_changes", { event: "*", schema: "public", table: "student_dots" }, () => {
-        supabase.from("student_dots").select("*").then(({ data }) => {
-          if (!alive || !data) return;
-          setServices(
-            data.map((r: any): RedDot => ({
-              id: r.id, name: r.name, area: r.area, lat: r.lat, lng: r.lng,
-              contact: r.contact, description: r.description,
-              category: r.category || r.icon || "hospital", type: r.pillar || "Private",
-              availability: r.availability, speciality: r.skills,
-              costRange: r.needs, goldenHour: r.other_help,
-              kind: "service", iconKey: r.icon, raw: r,
-            }))
-          );
-        });
+        loadServices();
       })
       .on("postgres_changes", { event: "*", schema: "public", table: "centre_dots" }, () => {
-        supabase.from("centre_dots").select("*").then(({ data }) => {
-          if (!alive || !data) return;
-          setHotspots(
-            data.map((r: any): RedDot => ({
-              id: r.id, name: r.name, area: r.area, lat: r.lat, lng: r.lng,
-              contact: r.contact, description: r.description,
-              totalAccidents: r.openings, deaths: r.job_role_salary,
-              injured: r.work_experience_years, fatalityRate: r.rating,
-              riskLevel: r.relevance, roadClass: r.nature_of_job, topCollision: r.services,
-              kind: (r.kind === "pothole" ? "pothole" : "hotspot"),
-              iconKey: "warning", raw: r,
-            }))
-          );
-        });
+        loadAccidentDots();
+      })
+      .on("postgres_changes", { event: "*", schema: "public", table: "pothole_dots" }, () => {
+        loadAccidentDots();
       })
       .subscribe();
 
