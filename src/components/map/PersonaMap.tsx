@@ -50,11 +50,11 @@ function normalizeCategory(cat?: string): string {
   const c = cat.toLowerCase().trim();
   if (c.includes("hospital")) return "hospital";
   if (c.includes("ambulance")) return "ambulance";
-  if (c.includes("mechanic")) return "mechanic";
-  if (c.includes("tow")) return "tow";
-  if (c === "ssm" || c.includes("sadak") || c.includes("suraksha")) return "ssm";
+  if (c.includes("mechanic") || c.includes("wrench")) return "mechanic";
+  if (c.includes("tow") || c === "truck") return "tow";
+  if (c === "ssm" || c === "users" || c.includes("sadak") || c.includes("suraksha") || c.includes("mitra")) return "ssm";
   if (c.includes("fuel") || c.includes("petrol") || c.includes("gas")) return "fuel";
-  if (c.includes("police")) return "police";
+  if (c.includes("police") || c.includes("shield")) return "police";
   return "default";
 }
 
