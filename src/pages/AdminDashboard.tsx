@@ -91,7 +91,7 @@ const AdminDashboard = () => {
       setLoading(true);
       const [svc, hot] = await Promise.all([
         fetchAllRows<ServiceRow>("student_dots", "id,name,area,category,pillar,availability,contact,created_at"),
-        fetchAllRows<HotspotRow>("centre_dots", "id,name,area,relevance,nature_of_job,openings,job_role_salary,rating,created_at"),
+        fetchAllRows<HotspotRow>("centre_dots", "id,name,area,relevance,nature_of_job,openings,job_role_salary,rating,lat,lng,created_at"),
       ]);
       if (!alive) return;
       setServices(svc);
