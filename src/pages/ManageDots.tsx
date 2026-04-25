@@ -84,6 +84,7 @@ const ManageDots = () => {
   const [mode, setMode] = useState<DotMode>("service");
   const [services, setServices] = useState<ServiceDot[]>([]);
   const [hotspots, setHotspots] = useState<HotspotDot[]>([]);
+  const [potholes, setPotholes] = useState<PotholeDot[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState("");
   const [showAddForm, setShowAddForm] = useState(false);
@@ -96,17 +97,20 @@ const ManageDots = () => {
   useEffect(() => { if (!user && !authLoading) navigate("/admin-login"); }, [user, authLoading, navigate]);
   useEffect(() => { setSelectedIds(new Set()); setEditingDot(null); setShowAddForm(false); fetchDots(); }, [mode]);
 
-  const tableForMode = (): "student_dots" | "centre_dots" =>
-    mode === "service" ? "student_dots" : "centre_dots";
+  const tableForMode = (): "student_dots" | "centre_dots" | "pothole_dots" =>
+    mode === "service" ? "student_dots" : mode === "hotspot" ? "centre_dots" : "pothole_dots";
 
   const fetchDots = async () => {
     setLoading(true);
     if (mode === "service") {
       const { data } = await supabase.from("student_dots").select("*").order("created_at", { ascending: false });
       setServices((data as unknown as ServiceDot[]) || []);
-    } else {
+    } else if (mode === "hotspot") {
       const { data } = await supabase.from("centre_dots").select("*").order("created_at", { ascending: false });
       setHotspots((data as unknown as HotspotDot[]) || []);
+    } else {
+      const { data } = await supabase.from("pothole_dots").select("*").order("created_at", { ascending: false });
+      setPotholes((data as unknown as PotholeDot[]) || []);
     }
     setLoading(false);
   };
