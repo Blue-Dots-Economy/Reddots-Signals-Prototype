@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import {
   ArrowLeft, Upload, Plus, Trash2, Search, Edit2, MapPin,
-  CircleDot, Hospital, AlertTriangle,
+  CircleDot, Hospital, AlertTriangle, Construction,
 } from "lucide-react";
 import { toast } from "sonner";
 import { geocodeAddressDetailed, jitterCoords, delay } from "@/lib/geocode";
