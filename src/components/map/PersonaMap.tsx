@@ -84,6 +84,19 @@ function createDotMarker(dot: RedDot, view: RedDotsView, isUserNearest: boolean)
   return el.firstElementChild as HTMLElement;
 }
 
+function getMarkerPosition(dot: RedDot): { lat: number; lng: number } {
+  if (dot.kind !== "pothole") return { lat: dot.lat, lng: dot.lng };
+
+  const seed = dot.id.split("").reduce((acc, ch) => acc + ch.charCodeAt(0), 0);
+  const angle = (seed % 360) * (Math.PI / 180);
+  const radius = 0.00035;
+
+  return {
+    lat: dot.lat + Math.sin(angle) * radius,
+    lng: dot.lng + Math.cos(angle) * radius,
+  };
+}
+
 const PersonaMap = ({ profile, activeView, dots, filteredDots, activeFilters, onFiltersChange }: Props) => {
   const { ready: mapsReady, error: mapsError } = useGoogleMaps();
   const mapRef = useRef<HTMLDivElement>(null);
@@ -139,9 +152,10 @@ const PersonaMap = ({ profile, activeView, dots, filteredDots, activeFilters, on
 
     orderedDots.forEach((dot) => {
       const content = createDotMarker(dot, activeView, false);
+      const position = getMarkerPosition(dot);
       const marker = new g.maps.marker.AdvancedMarkerElement({
         map,
-        position: { lat: dot.lat, lng: dot.lng },
+        position,
         content,
         zIndex: dot.kind === "pothole" ? 3000 : 2000,
       });
