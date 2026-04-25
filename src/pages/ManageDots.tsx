@@ -422,7 +422,7 @@ const ManageDots = () => {
         {loading ? (
           <div className="flex items-center justify-center py-20"><div className="animate-spin w-8 h-8 border-4 rounded-full border-t-transparent" style={{ borderColor: `${accent} transparent ${accent} ${accent}` }} /></div>
         ) : filteredDots.length === 0 ? (
-          <div className="text-center py-12 text-sm text-muted-foreground bg-card border border-border rounded-xl">No {mode === "service" ? "services" : "hotspots"} yet. Upload a CSV or add one manually.</div>
+          <div className="text-center py-12 text-sm text-muted-foreground bg-card border border-border rounded-xl">No {mode === "service" ? "services" : mode === "hotspot" ? "hotspots" : "potholes"} yet. Upload a CSV or add one manually.</div>
         ) : (
           <div className="bg-card border border-border rounded-xl overflow-hidden">
             <div className="overflow-x-auto">
