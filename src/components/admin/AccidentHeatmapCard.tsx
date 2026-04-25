@@ -35,10 +35,10 @@ const AccidentHeatmapCard = ({ points }: Props) => {
     const g = (window as any).google;
     if (!g?.maps) return;
 
-    // Center on Guwahati by default; will fit to points after data loads
+    // Centered & zoomed on Guwahati city
     mapInstance.current = new g.maps.Map(mapRef.current, {
       center: { lat: 26.1445, lng: 91.7362 },
-      zoom: 11,
+      zoom: 12,
       disableDefaultUI: true,
       zoomControl: true,
       styles: CLEAN_MAP_STYLE,
@@ -52,9 +52,16 @@ const AccidentHeatmapCard = ({ points }: Props) => {
     const g = (window as any).google;
     if (!g?.maps?.visualization) return;
 
+    // Limit heatmap to Guwahati region only — ignore Delhi & other cities
+    const GUWAHATI_BOUNDS = { minLat: 26.05, maxLat: 26.30, minLng: 91.50, maxLng: 91.95 };
     const valid = points.filter(
-      (p) => Number.isFinite(p.lat) && Number.isFinite(p.lng)
+      (p) =>
+        Number.isFinite(p.lat) && Number.isFinite(p.lng) &&
+        p.lat >= GUWAHATI_BOUNDS.minLat && p.lat <= GUWAHATI_BOUNDS.maxLat &&
+        p.lng >= GUWAHATI_BOUNDS.minLng && p.lng <= GUWAHATI_BOUNDS.maxLng
     );
+
+    if (heatLayerRef.current) heatLayerRef.current.setMap(null);
     if (valid.length === 0) return;
 
     const data = valid.map((p) => ({
@@ -62,22 +69,18 @@ const AccidentHeatmapCard = ({ points }: Props) => {
       weight: p.weight ?? 1,
     }));
 
-    if (heatLayerRef.current) {
-      heatLayerRef.current.setMap(null);
-    }
     heatLayerRef.current = new g.maps.visualization.HeatmapLayer({
       data,
       map,
-      radius: 22,
-      opacity: 0.75,
+      radius: 28,
+      opacity: 0.78,
       gradient: RISK_GRADIENT,
       dissipating: true,
     });
 
-    // Auto-fit bounds to data
-    const bounds = new g.maps.LatLngBounds();
-    valid.forEach((p) => bounds.extend({ lat: p.lat, lng: p.lng }));
-    map.fitBounds(bounds, 32);
+    // Keep the map locked on Guwahati (don't auto-zoom out to fit stragglers)
+    map.setCenter({ lat: 26.1445, lng: 91.7362 });
+    map.setZoom(12);
   }, [points, ready]);
 
   return (
