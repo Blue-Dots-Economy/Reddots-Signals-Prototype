@@ -17,21 +17,21 @@ const ChatRouting = ({ userName, onChoose }: Props) => (
       style={{ backgroundImage: `radial-gradient(${RED} 1px, transparent 1px)`, backgroundSize: "24px 24px" }}
     />
 
-    <div className="relative z-10 w-full max-w-md px-4 sm:px-6 space-y-6 animate-fade-in pt-[env(safe-area-inset-top)] pb-[calc(env(safe-area-inset-bottom)+1rem)]">
+    <div className="relative z-10 w-full max-w-md lg:max-w-3xl px-4 sm:px-6 space-y-6 animate-fade-in pt-[env(safe-area-inset-top)] pb-[calc(env(safe-area-inset-bottom)+1.5rem)]">
       <div className="text-center space-y-2">
         <p className="text-xs uppercase tracking-wider text-muted-foreground font-semibold">
           Hi {userName.split(" ")[0]}
         </p>
-        <h1 className="text-2xl sm:text-3xl font-extrabold text-foreground tracking-tight">
+        <h1 className="text-[20px] sm:text-2xl lg:text-[28px] font-extrabold text-foreground tracking-tight">
           What do you need?
         </h1>
         <p className="text-sm text-muted-foreground">What do you need right now?</p>
       </div>
 
-      <div className="space-y-3">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 lg:gap-4">
         <button
           onClick={() => onChoose("services")}
-          className="w-full text-left rounded-2xl p-5 border-2 transition-all hover:shadow-lg active:scale-[0.98] flex items-start gap-4"
+          className="tap-44 w-full text-left rounded-2xl p-5 border-2 transition-all hover:shadow-lg active:scale-[0.98] flex items-start gap-4 min-h-[80px] lg:min-h-[120px]"
           style={{ borderColor: RED, background: `${RED}08` }}
         >
           <div
@@ -50,7 +50,7 @@ const ChatRouting = ({ userName, onChoose }: Props) => (
 
         <button
           onClick={() => onChoose("accidents")}
-          className="w-full text-left rounded-2xl p-5 border-2 transition-all hover:shadow-lg active:scale-[0.98] flex items-start gap-4"
+          className="tap-44 w-full text-left rounded-2xl p-5 border-2 transition-all hover:shadow-lg active:scale-[0.98] flex items-start gap-4 min-h-[80px] lg:min-h-[120px]"
           style={{ borderColor: GREY, background: `${GREY}10` }}
         >
           <div
