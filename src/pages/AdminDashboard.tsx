@@ -65,15 +65,35 @@ const AdminDashboard = () => {
 
   useEffect(() => {
     let alive = true;
+
+    // Supabase caps each query at 1000 rows; paginate to fetch the entire sheet.
+    const fetchAllRows = async <T,>(table: "student_dots" | "centre_dots", select: string): Promise<T[]> => {
+      const PAGE = 1000;
+      const all: T[] = [];
+      let from = 0;
+      while (true) {
+        const { data, error } = await supabase
+          .from(table)
+          .select(select)
+          .order("created_at", { ascending: false })
+          .range(from, from + PAGE - 1);
+        if (error || !data || data.length === 0) break;
+        all.push(...(data as any));
+        if (data.length < PAGE) break;
+        from += PAGE;
+      }
+      return all;
+    };
+
     const fetchAll = async () => {
       setLoading(true);
-      const [{ data: svc }, { data: hot }] = await Promise.all([
-        supabase.from("student_dots").select("id,name,area,category,pillar,availability,contact,created_at").order("created_at", { ascending: false }),
-        supabase.from("centre_dots").select("id,name,area,relevance,nature_of_job,openings,job_role_salary,rating,created_at").order("created_at", { ascending: false }),
+      const [svc, hot] = await Promise.all([
+        fetchAllRows<ServiceRow>("student_dots", "id,name,area,category,pillar,availability,contact,created_at"),
+        fetchAllRows<HotspotRow>("centre_dots", "id,name,area,relevance,nature_of_job,openings,job_role_salary,rating,created_at"),
       ]);
       if (!alive) return;
-      setServices((svc as any) || []);
-      setHotspots((hot as any) || []);
+      setServices(svc);
+      setHotspots(hot);
       setLoading(false);
     };
     fetchAll();
