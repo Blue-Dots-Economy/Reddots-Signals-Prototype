@@ -101,7 +101,7 @@ const PersonaListView = ({ profile, activeView, dots, filteredDots, activeFilter
             </button>
           </div>
         ) : (
-          <div className="space-y-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 mt-3">
             {sorted.map((dot) => {
               const dist = haversineKm(profile.lat, profile.lng, dot.lat, dot.lng).toFixed(1);
 
