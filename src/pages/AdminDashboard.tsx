@@ -10,6 +10,7 @@ import {
   ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid,
   PieChart, Pie, Cell, Legend,
 } from "recharts";
+import AccidentHeatmapCard from "@/components/admin/AccidentHeatmapCard";
 
 const RED = "#DC143C";
 const GREY = "#4A4A4A";
@@ -34,6 +35,8 @@ interface HotspotRow {
   openings: string | null;        // total accidents
   job_role_salary: string | null; // deaths
   rating: string | null;          // fatality rate
+  lat: number | null;
+  lng: number | null;
   created_at: string;
 }
 
@@ -89,7 +92,7 @@ const AdminDashboard = () => {
       setLoading(true);
       const [svc, hot] = await Promise.all([
         fetchAllRows<ServiceRow>("student_dots", "id,name,area,category,pillar,availability,contact,created_at"),
-        fetchAllRows<HotspotRow>("centre_dots", "id,name,area,relevance,nature_of_job,openings,job_role_salary,rating,created_at"),
+        fetchAllRows<HotspotRow>("centre_dots", "id,name,area,relevance,nature_of_job,openings,job_role_salary,rating,lat,lng,created_at"),
       ]);
       if (!alive) return;
       setServices(svc);
@@ -177,6 +180,18 @@ const AdminDashboard = () => {
       }))
       .filter((d) => d.value > 0);
   }, [serviceCategoryCounts]);
+
+  // Heatmap points: weight by risk level so CRITICAL spots burn brightest
+  const heatmapPoints = useMemo(() => {
+    const RISK_WEIGHT: Record<string, number> = { CRITICAL: 5, HIGH: 3, MODERATE: 1.5, LOW: 1 };
+    return hotspots
+      .filter((h) => Number.isFinite(h.lat as any) && Number.isFinite(h.lng as any))
+      .map((h) => ({
+        lat: h.lat as number,
+        lng: h.lng as number,
+        weight: RISK_WEIGHT[(h.relevance || "").toUpperCase()] ?? 1,
+      }));
+  }, [hotspots]);
 
   return (
     <div className="min-h-screen bg-background">
@@ -308,23 +323,7 @@ const AdminDashboard = () => {
                 )}
               </Panel>
 
-              <Panel title="Service Mix" icon={<PieIcon size={16} style={{ color: RED }} />}>
-                {servicesByCategory.length === 0 ? (
-                  <EmptyState text="No services to chart yet." />
-                ) : (
-                  <div style={{ width: "100%", height: 280 }}>
-                    <ResponsiveContainer>
-                      <PieChart>
-                        <Tooltip contentStyle={{ fontSize: 12, borderRadius: 8 }} />
-                        <Legend wrapperStyle={{ fontSize: 11 }} />
-                        <Pie data={servicesByCategory} dataKey="value" nameKey="name" innerRadius={50} outerRadius={90} paddingAngle={2}>
-                          {servicesByCategory.map((d, i) => <Cell key={i} fill={d.color} />)}
-                        </Pie>
-                      </PieChart>
-                    </ResponsiveContainer>
-                  </div>
-                )}
-              </Panel>
+              <AccidentHeatmapCard points={heatmapPoints} />
             </div>
 
             <Panel title="Top 10 Deadliest Hotspots" icon={<TrendingUp size={16} style={{ color: GREY }} />}>
