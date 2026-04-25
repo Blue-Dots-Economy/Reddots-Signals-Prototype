@@ -459,9 +459,9 @@ const ManageDots = () => {
                             </div>
                           ) : c.key === "lat" || c.key === "lng" ? (
                             <span>{Number(d[c.key])?.toFixed(4) ?? "—"}</span>
-                          ) : c.key === "relevance" ? (
-                            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full text-white" style={{ background: ((d.relevance || "").toUpperCase() === "CRITICAL") ? "#7F1D1D" : ((d.relevance || "").toUpperCase() === "HIGH") ? RED : "#F59E0B" }}>
-                              {(d.relevance || "—").toUpperCase()}
+                          ) : c.key === "relevance" || c.key === "severity" ? (
+                            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full text-white" style={{ background: ((d[c.key] || "").toUpperCase() === "CRITICAL") ? "#7F1D1D" : ((d[c.key] || "").toUpperCase() === "HIGH") ? RED : ((d[c.key] || "").toUpperCase() === "LOW") ? "#10B981" : "#F59E0B" }}>
+                              {(d[c.key] || "—").toUpperCase()}
                             </span>
                           ) : (
                             <span className="capitalize">{(d[c.key] || "—").toString().replace(/_/g, " ")}</span>
