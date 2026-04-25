@@ -35,10 +35,10 @@ const AccidentHeatmapCard = ({ points }: Props) => {
     const g = (window as any).google;
     if (!g?.maps) return;
 
-    // Center on Guwahati by default; will fit to points after data loads
+    // Centered & zoomed on Guwahati city
     mapInstance.current = new g.maps.Map(mapRef.current, {
       center: { lat: 26.1445, lng: 91.7362 },
-      zoom: 11,
+      zoom: 12,
       disableDefaultUI: true,
       zoomControl: true,
       styles: CLEAN_MAP_STYLE,
@@ -52,9 +52,16 @@ const AccidentHeatmapCard = ({ points }: Props) => {
     const g = (window as any).google;
     if (!g?.maps?.visualization) return;
 
+    // Limit heatmap to Guwahati region only — ignore Delhi & other cities
+    const GUWAHATI_BOUNDS = { minLat: 26.05, maxLat: 26.30, minLng: 91.50, maxLng: 91.95 };
     const valid = points.filter(
-      (p) => Number.isFinite(p.lat) && Number.isFinite(p.lng)
+      (p) =>
+        Number.isFinite(p.lat) && Number.isFinite(p.lng) &&
+        p.lat >= GUWAHATI_BOUNDS.minLat && p.lat <= GUWAHATI_BOUNDS.maxLat &&
+        p.lng >= GUWAHATI_BOUNDS.minLng && p.lng <= GUWAHATI_BOUNDS.maxLng
     );
+
+    if (heatLayerRef.current) heatLayerRef.current.setMap(null);
     if (valid.length === 0) return;
 
     const data = valid.map((p) => ({
@@ -62,22 +69,18 @@ const AccidentHeatmapCard = ({ points }: Props) => {
       weight: p.weight ?? 1,
     }));
 
-    if (heatLayerRef.current) {
-      heatLayerRef.current.setMap(null);
-    }
     heatLayerRef.current = new g.maps.visualization.HeatmapLayer({
       data,
       map,
-      radius: 22,
-      opacity: 0.75,
+      radius: 28,
+      opacity: 0.78,
       gradient: RISK_GRADIENT,
       dissipating: true,
     });
 
-    // Auto-fit bounds to data
-    const bounds = new g.maps.LatLngBounds();
-    valid.forEach((p) => bounds.extend({ lat: p.lat, lng: p.lng }));
-    map.fitBounds(bounds, 32);
+    // Keep the map locked on Guwahati (don't auto-zoom out to fit stragglers)
+    map.setCenter({ lat: 26.1445, lng: 91.7362 });
+    map.setZoom(12);
   }, [points, ready]);
 
   return (
@@ -111,6 +114,48 @@ const AccidentHeatmapCard = ({ points }: Props) => {
             No accident hotspot coordinates available.
           </div>
         )}
+      </div>
+
+      {/* Legend */}
+      <div className="mt-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+        <div className="flex items-center gap-2">
+          <span className="text-[11px] font-medium text-muted-foreground uppercase tracking-wide">
+            Density
+          </span>
+          <div className="flex flex-col gap-0.5">
+            <div
+              className="h-2.5 w-44 rounded-full"
+              style={{
+                background:
+                  "linear-gradient(to right, rgba(255,235,200,0.9), rgba(255,200,120,1), rgba(255,140,60,1), rgba(240,80,40,1), rgba(200,20,20,1), rgba(127,29,29,1))",
+              }}
+            />
+            <div className="flex justify-between w-44 text-[10px] text-muted-foreground">
+              <span>Low</span>
+              <span>High</span>
+            </div>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-3 flex-wrap">
+          <span className="text-[11px] font-medium text-muted-foreground uppercase tracking-wide">
+            Risk
+          </span>
+          {[
+            { label: "Critical", color: "#7F1D1D" },
+            { label: "High", color: "#DC143C" },
+            { label: "Moderate", color: "#F59E0B" },
+            { label: "Low", color: "#FCD34D" },
+          ].map((r) => (
+            <div key={r.label} className="flex items-center gap-1.5">
+              <span
+                className="inline-block w-2.5 h-2.5 rounded-full"
+                style={{ background: r.color }}
+              />
+              <span className="text-[11px] text-foreground">{r.label}</span>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );
