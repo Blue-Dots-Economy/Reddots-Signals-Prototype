@@ -335,7 +335,29 @@ Deno.serve(async (req) => {
           const safeEmail = normalizedEmail && !seenEmails.has(normalizedEmail) ? normalizedEmail : null;
           if (safeEmail) seenEmails.add(safeEmail);
 
-          if (isHotspot) {
+          if (isPothole) {
+            // ─── Pothole → pothole_dots ───
+            const sev = normalizeRisk(getField(r, ["severity", "risk_level", "risk", "grade"]));
+            inserts.push({
+              name,
+              area: area || "Unknown",
+              icon: "circle-dot",
+              lat, lng,
+              contact: phone || "direct",
+              email: safeEmail,
+              description: getField(r, ["description", "notes"]) || null,
+              severity: sev,
+              road_class: getField(r, ["road_class", "road_type", "highway_class", "road_category"]) || null,
+              size: getField(r, ["size", "pothole_size", "diameter"]) || null,
+              depth: getField(r, ["depth", "pothole_depth"]) || null,
+              status: getField(r, ["status", "repair_status", "fix_status"]) || null,
+              reported_by: getField(r, ["reported_by", "reporter", "reported_by_name"]) || null,
+              reported_on: getField(r, ["reported_on", "reported_date", "date_reported", "date"]) || null,
+              remarks: getField(r, ["remarks", "comments"]) || null,
+              address: getField(r, ["address", "full_address", "landmark"]) || null,
+              unique_id: getField(r, ["unique_id", "ids", "sr_no"]) || null,
+            });
+          } else if (isHotspot) {
             // ─── Accident Hotspot → centre_dots ───
             const risk = normalizeRisk(getField(r, ["risk_level", "risk", "severity", "blackspot_grade"]));
             inserts.push({
