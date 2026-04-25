@@ -38,7 +38,11 @@ const DISTANCE_OPTIONS = [2, 5, 10, 25];
 const PersonaFilterTerminal = ({ activeView, activeFilters, onFiltersChange, visibleCount, totalCount }: Props) => {
   const isMobile = useIsMobile();
   const accent = activeView === "accidents" ? GREY : RED;
-  const [collapsed, setCollapsed] = useState(false);
+  // Collapsed by default on mobile so the filter doesn't cover the map on first load.
+  const [collapsed, setCollapsed] = useState(() => {
+    if (typeof window === "undefined") return false;
+    return window.innerWidth < 768;
+  });
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   const [position, setPosition] = useState({ x: 16, y: 56 });
   const [isDragging, setIsDragging] = useState(false);
