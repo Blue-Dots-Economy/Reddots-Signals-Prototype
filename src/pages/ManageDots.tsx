@@ -209,7 +209,7 @@ const ManageDots = () => {
             needs: getField(r, ["cost", "cost_range", "needs"]) || null,
             other_help: getField(r, ["golden_hour", "other_help"]) || null,
           });
-        } else {
+        } else if (mode === "hotspot") {
           inserts.push({
             name: name || "Unknown", area, lat, lng,
             email: getField(r, ["email"]) || null,
@@ -223,6 +223,23 @@ const ManageDots = () => {
             work_experience_years: getField(r, ["injured", "work_experience_years"]) || null,
             rating: getField(r, ["fatality_rate", "rating"]) || null,
             services: getField(r, ["top_collision", "collision_type", "services"]) || null,
+          });
+        } else {
+          inserts.push({
+            name: name || "Unknown", area, lat, lng,
+            email: getField(r, ["email"]) || null,
+            description: getField(r, ["description"]) || null,
+            icon: "circle-dot",
+            contact: getField(r, ["contact", "phone"]) || "direct",
+            severity: (getField(r, ["severity", "risk_level", "risk"]) || "MODERATE").toUpperCase(),
+            road_class: getField(r, ["road_class", "road_type"]) || null,
+            size: getField(r, ["size", "pothole_size"]) || null,
+            depth: getField(r, ["depth"]) || null,
+            status: getField(r, ["status", "repair_status"]) || null,
+            reported_by: getField(r, ["reported_by", "reporter"]) || null,
+            reported_on: getField(r, ["reported_on", "date_reported", "date"]) || null,
+            remarks: getField(r, ["remarks", "comments"]) || null,
+            address: getField(r, ["address"]) || null,
           });
         }
       }
