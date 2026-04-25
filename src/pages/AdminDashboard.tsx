@@ -181,6 +181,18 @@ const AdminDashboard = () => {
       .filter((d) => d.value > 0);
   }, [serviceCategoryCounts]);
 
+  // Heatmap points: weight by risk level so CRITICAL spots burn brightest
+  const heatmapPoints = useMemo(() => {
+    const RISK_WEIGHT: Record<string, number> = { CRITICAL: 5, HIGH: 3, MODERATE: 1.5, LOW: 1 };
+    return hotspots
+      .filter((h) => Number.isFinite(h.lat as any) && Number.isFinite(h.lng as any))
+      .map((h) => ({
+        lat: h.lat as number,
+        lng: h.lng as number,
+        weight: RISK_WEIGHT[(h.relevance || "").toUpperCase()] ?? 1,
+      }));
+  }, [hotspots]);
+
   return (
     <div className="min-h-screen bg-background">
       <header className="border-b border-border bg-card/80 backdrop-blur-md sticky top-0 z-10" style={{ boxShadow: "0 1px 4px rgba(0,0,0,0.03)" }}>
