@@ -32,6 +32,19 @@ const MODE_META: Record<DotMode, { label: string; pillText: string; helper: Reac
       </>
     ),
   },
+  pothole: {
+    label: "Potholes",
+    pillText: "Potholes",
+    helper: (
+      <>
+        Link a sheet of <strong>potholes</strong>. Recognised columns: <strong>name</strong>, <strong>area</strong>,
+        <strong> severity</strong> (critical / high / moderate / low), <strong>road_class</strong>,
+        <strong> size</strong>, <strong>depth</strong>, <strong>status</strong> (reported / in-progress / fixed),
+        <strong> reported_by</strong>, <strong>reported_on</strong>, <strong>remarks</strong>,
+        plus optional <strong>lat</strong>/<strong>lng</strong>, <strong>address</strong>, <strong>contact</strong>, <strong>email</strong>.
+      </>
+    ),
+  },
 };
 
 interface SheetConfig {
