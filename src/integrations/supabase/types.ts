@@ -464,6 +464,78 @@ export type Database = {
         }
         Relationships: []
       }
+      pothole_dots: {
+        Row: {
+          address: string | null
+          area: string
+          contact: string
+          created_at: string
+          depth: string | null
+          description: string | null
+          email: string | null
+          icon: string
+          id: string
+          lat: number
+          lng: number
+          name: string
+          remarks: string | null
+          reported_by: string | null
+          reported_on: string | null
+          road_class: string | null
+          severity: string | null
+          size: string | null
+          status: string | null
+          unique_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          address?: string | null
+          area: string
+          contact?: string
+          created_at?: string
+          depth?: string | null
+          description?: string | null
+          email?: string | null
+          icon?: string
+          id?: string
+          lat: number
+          lng: number
+          name: string
+          remarks?: string | null
+          reported_by?: string | null
+          reported_on?: string | null
+          road_class?: string | null
+          severity?: string | null
+          size?: string | null
+          status?: string | null
+          unique_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          address?: string | null
+          area?: string
+          contact?: string
+          created_at?: string
+          depth?: string | null
+          description?: string | null
+          email?: string | null
+          icon?: string
+          id?: string
+          lat?: number
+          lng?: number
+          name?: string
+          remarks?: string | null
+          reported_by?: string | null
+          reported_on?: string | null
+          road_class?: string | null
+          severity?: string | null
+          size?: string | null
+          status?: string | null
+          unique_id?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       sheet_configs: {
         Row: {
           created_at: string
