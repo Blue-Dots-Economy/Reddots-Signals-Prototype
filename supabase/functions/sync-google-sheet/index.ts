@@ -284,10 +284,13 @@ Deno.serve(async (req) => {
         });
         console.log(`Parsed ${dataRows.length} data rows`);
 
-        // Red Dots only supports two dot types now: services (student_dots) + hotspots (centre_dots).
+        // Red Dots supports three dot types: services (student_dots), hotspots (centre_dots), potholes (pothole_dots).
         // Backwards compatibility: legacy values "tutor"/"college"/"counsellor" all collapse to services.
         const isHotspot = config.dot_type === "centre" || config.dot_type === "hotspot";
-        const table: "student_dots" | "centre_dots" = isHotspot ? "centre_dots" : "student_dots";
+        const isPothole = config.dot_type === "pothole";
+        const table: "student_dots" | "centre_dots" | "pothole_dots" = isPothole
+          ? "pothole_dots"
+          : isHotspot ? "centre_dots" : "student_dots";
 
         // Preserve UUIDs by email
         const { data: existingDots } = await supabase.from(table).select("id, email");
