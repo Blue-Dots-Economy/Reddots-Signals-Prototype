@@ -275,9 +275,8 @@ const DotCardPanel = ({ dot, activeView, onClose }: Props) => {
                 <tr key={label}>
                   <td className="pr-4 py-1 font-medium whitespace-nowrap text-muted-foreground text-[13px]">{label}</td>
                   <td className="py-1 text-foreground text-[13px]">{value}</td>
-                ))}
-              </tr>
-            ))}
+                </tr>
+              ))}
             </tbody>
           </table>
         )}
