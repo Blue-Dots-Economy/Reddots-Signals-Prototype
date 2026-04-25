@@ -15,10 +15,11 @@ import GoogleSheetSync from "@/components/sheets/GoogleSheetSync";
 
 const RED = "#DC143C";
 const GREY = "#4A4A4A";
+const ORANGE = "#EA580C";
 const MAX_DOTS_ON_MAP = 50;
 const RISK_RANK: Record<string, number> = { CRITICAL: 0, HIGH: 1, MODERATE: 2, LOW: 3 };
 
-type DotMode = "service" | "hotspot";
+type DotMode = "service" | "hotspot" | "pothole";
 
 // student_dots is repurposed for service providers
 interface ServiceDot {
