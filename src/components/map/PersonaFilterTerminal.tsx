@@ -38,7 +38,11 @@ const DISTANCE_OPTIONS = [2, 5, 10, 25];
 const PersonaFilterTerminal = ({ activeView, activeFilters, onFiltersChange, visibleCount, totalCount }: Props) => {
   const isMobile = useIsMobile();
   const accent = activeView === "accidents" ? GREY : RED;
-  const [collapsed, setCollapsed] = useState(false);
+  // Collapsed by default on mobile so the filter doesn't cover the map on first load.
+  const [collapsed, setCollapsed] = useState(() => {
+    if (typeof window === "undefined") return false;
+    return window.innerWidth < 768;
+  });
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   const [position, setPosition] = useState({ x: 16, y: 56 });
   const [isDragging, setIsDragging] = useState(false);
@@ -103,13 +107,17 @@ const PersonaFilterTerminal = ({ activeView, activeFilters, onFiltersChange, vis
   if (collapsed) {
     if (isMobile) {
       return (
-        <div className="fixed left-3 right-3 z-[1000]" style={{ top: `calc(env(safe-area-inset-top) + 0.75rem)` }}>
-          <button onClick={() => setCollapsed(false)} className="map-panel py-2.5 px-4 flex items-center gap-2 w-full justify-center min-h-[44px]">
-            <Filter size={16} className="opacity-70" />
-            <span className="text-xs font-semibold uppercase opacity-80">Filters</span>
+        <div className="fixed left-3 z-[1000]" style={{ top: `calc(env(safe-area-inset-top) + 0.75rem)` }}>
+          <button
+            onClick={() => setCollapsed(false)}
+            className="map-panel py-2 px-3 flex items-center gap-1.5 min-h-[40px] rounded-full"
+            aria-label="Open filters"
+          >
+            <Filter size={14} className="opacity-80" />
+            <span className="text-[11px] font-semibold uppercase opacity-90">Filters</span>
             {filterCount > 0 && (
               <span
-                className="ml-1 inline-flex items-center justify-center text-[10px] font-bold rounded-full px-1.5 py-0.5 text-white"
+                className="ml-0.5 inline-flex items-center justify-center text-[10px] font-bold rounded-full px-1.5 py-0.5 text-white"
                 style={{ background: accent }}
               >
                 {filterCount}
