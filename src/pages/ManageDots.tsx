@@ -258,13 +258,21 @@ const ManageDots = () => {
     }
   };
 
-  const getCurrentDots = (): any[] => mode === "service" ? services : hotspots;
+  const getCurrentDots = (): any[] =>
+    mode === "service" ? services : mode === "hotspot" ? hotspots : potholes;
 
   const getFilteredDots = (): any[] => {
     const list = getCurrentDots();
     if (!filter.trim()) return list;
     const q = filter.toLowerCase();
-    return list.filter((d: any) => d.name?.toLowerCase().includes(q) || d.area?.toLowerCase().includes(q) || (d.category || "").toLowerCase().includes(q) || (d.relevance || "").toLowerCase().includes(q));
+    return list.filter((d: any) =>
+      d.name?.toLowerCase().includes(q) ||
+      d.area?.toLowerCase().includes(q) ||
+      (d.category || "").toLowerCase().includes(q) ||
+      (d.relevance || "").toLowerCase().includes(q) ||
+      (d.severity || "").toLowerCase().includes(q) ||
+      (d.status || "").toLowerCase().includes(q)
+    );
   };
 
   const getMapDots = () => {
@@ -281,6 +289,10 @@ const ManageDots = () => {
         const accidentsA = Number(a.openings || 0);
         const accidentsB = Number(b.openings || 0);
         if (accidentsA !== accidentsB) return accidentsB - accidentsA;
+      } else if (mode === "pothole") {
+        const sevA = RISK_RANK[(a.severity || "").toUpperCase()] ?? 99;
+        const sevB = RISK_RANK[(b.severity || "").toUpperCase()] ?? 99;
+        if (sevA !== sevB) return sevA - sevB;
       }
 
       return new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime();
@@ -288,8 +300,8 @@ const ManageDots = () => {
 
     return selectDistributedTopN(filteredDots, MAX_DOTS_ON_MAP, compareDots).map((d: any) => ({
       id: d.id, name: d.name, lat: d.lat, lng: d.lng,
-      label: mode === "service" ? d.category : d.relevance,
-      icon: mode === "service" ? (d.icon || d.category) : "warning",
+      label: mode === "service" ? d.category : mode === "hotspot" ? d.relevance : d.severity,
+      icon: mode === "service" ? (d.icon || d.category) : mode === "hotspot" ? "warning" : "circle-dot",
     }));
   };
 
