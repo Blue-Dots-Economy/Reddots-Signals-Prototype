@@ -378,7 +378,7 @@ const ManageDots = () => {
           <div className="flex rounded-xl border border-border overflow-hidden w-fit">
             {tabs.map((t) => {
               const Icon = t.icon;
-              const tabAccent = t.key === "service" ? RED : GREY;
+              const tabAccent = t.key === "service" ? RED : t.key === "hotspot" ? GREY : ORANGE;
               return (
                 <button key={t.key} onClick={() => setMode(t.key)} className="px-3 sm:px-4 py-2.5 text-xs sm:text-sm font-semibold transition-all flex items-center gap-1.5" style={mode === t.key ? { background: tabAccent, color: "white" } : { background: "transparent", color: "hsl(var(--muted-foreground))" }}>
                   <Icon size={14} /> {t.label}
