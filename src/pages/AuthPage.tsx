@@ -151,6 +151,20 @@ const AuthPage = () => {
                   "Continue"
                 )}
               </button>
+
+              <div className="flex items-center gap-3">
+                <div className="flex-1 h-px bg-border" />
+                <span className="text-[11px] uppercase tracking-wider text-muted-foreground">or</span>
+                <div className="flex-1 h-px bg-border" />
+              </div>
+
+              <button
+                type="button"
+                onClick={handleGuestLogin}
+                className="tap-44 w-full h-12 rounded-xl text-[14px] font-semibold text-foreground border border-input bg-background hover:bg-muted transition-all duration-200 active:scale-[0.98]"
+              >
+                Continue without phone number
+              </button>
             </form>
           )}
 
