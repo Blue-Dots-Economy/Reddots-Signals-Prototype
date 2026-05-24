@@ -48,6 +48,20 @@ const AuthPage = () => {
     setPhone("");
   };
 
+  const handleGuestLogin = () => {
+    const guestPhone = `00000${Math.floor(10000 + Math.random() * 90000)}`;
+    saveProfile({
+      persona: "red_dots_user",
+      name: "Guest",
+      phone: guestPhone,
+      lat: 26.1445,
+      lng: 91.7362,
+      area: "Guwahati",
+      rowData: {},
+    });
+    navigate("/home", { replace: true });
+  };
+
   return (
     <div className="h-[100dvh] flex bg-background overflow-hidden safe-px">
       <div className="flex items-center justify-center w-full px-4 sm:px-6 relative pt-[env(safe-area-inset-top)] pb-[env(safe-area-inset-bottom)]">
@@ -136,6 +150,20 @@ const AuthPage = () => {
                 ) : (
                   "Continue"
                 )}
+              </button>
+
+              <div className="flex items-center gap-3">
+                <div className="flex-1 h-px bg-border" />
+                <span className="text-[11px] uppercase tracking-wider text-muted-foreground">or</span>
+                <div className="flex-1 h-px bg-border" />
+              </div>
+
+              <button
+                type="button"
+                onClick={handleGuestLogin}
+                className="tap-44 w-full h-12 rounded-xl text-[14px] font-semibold text-foreground border border-input bg-background hover:bg-muted transition-all duration-200 active:scale-[0.98]"
+              >
+                Continue without phone number
               </button>
             </form>
           )}
