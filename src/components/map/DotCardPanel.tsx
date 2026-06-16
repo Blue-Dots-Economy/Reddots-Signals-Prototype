@@ -233,7 +233,7 @@ function DotPopover({
 
 /* ───────────── Card body content ───────────── */
 
-const DotCardPanel = ({ dot, activeView, onClose }: Props) => {
+const DotCardPanel = ({ dot, activeView, anchorPos, onClose }: Props) => {
   const isMobile = useIsMobile();
   const phone = firstPhone(dot.contact);
   const directionsUrl = `https://www.google.com/maps/dir/?api=1&destination=${dot.lat},${dot.lng}`;
