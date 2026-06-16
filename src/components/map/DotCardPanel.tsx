@@ -340,7 +340,7 @@ const DotCardPanel = ({ dot, activeView, anchorPos, onClose }: Props) => {
               {children}
             </MobileBottomSheet>
           ) : (
-            <SidePanel onClose={onClose}>{children}</SidePanel>
+            <DotPopover onClose={onClose} anchorPos={anchorPos}>{children}</DotPopover>
           );
 
         return (
