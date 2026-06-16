@@ -168,28 +168,72 @@ function MobileBottomSheet({
   );
 }
 
-/* ───────────── Tablet/Desktop right-side panel ───────────── */
+/* ───────────── Tablet/Desktop popover anchored to dot ───────────── */
 
-function SidePanel({ onClose, children }: { onClose: () => void; children: React.ReactNode }) {
+function DotPopover({
+  onClose,
+  children,
+  anchorPos,
+}: {
+  onClose: () => void;
+  children: React.ReactNode;
+  anchorPos?: { x: number; y: number } | null;
+}) {
+  const CARD_W = 360;
+  const CARD_MAX_H = Math.min(520, typeof window !== "undefined" ? window.innerHeight - 32 : 520);
+  const GAP = 16; // distance from dot
+
+  // Default to centered if no anchor
+  const vw = typeof window !== "undefined" ? window.innerWidth : 1024;
+  const vh = typeof window !== "undefined" ? window.innerHeight : 768;
+
+  const ax = anchorPos?.x ?? vw / 2;
+  const ay = anchorPos?.y ?? vh / 2;
+
+  // Prefer above the dot; flip below if not enough space
+  const placeAbove = ay > CARD_MAX_H + GAP + 16;
+  let left = ax - CARD_W / 2;
+  left = Math.max(12, Math.min(left, vw - CARD_W - 12));
+  const top = placeAbove ? ay - GAP - CARD_MAX_H : ay + GAP;
+
+  // Arrow horizontal position relative to card
+  const arrowLeft = Math.max(16, Math.min(ax - left, CARD_W - 16));
+
   return (
     <div className="fixed inset-0 z-[2000] animate-fade-in">
-      <button aria-label="Close" onClick={onClose} className="absolute inset-0 bg-black/20" />
-      <aside
-        className="absolute top-0 right-0 h-[100dvh] bg-white shadow-[0_8px_40px_rgba(0,0,0,0.18)] flex flex-col animate-slide-in-right w-[320px] lg:w-[400px]"
-        style={{ paddingTop: "env(safe-area-inset-top)", paddingBottom: "env(safe-area-inset-bottom)" }}
+      <button aria-label="Close" onClick={onClose} className="absolute inset-0 bg-transparent" />
+      <div
+        className="absolute bg-white rounded-2xl shadow-[0_12px_40px_rgba(0,0,0,0.22)] flex flex-col animate-scale-in"
+        style={{
+          left,
+          top,
+          width: CARD_W,
+          maxHeight: CARD_MAX_H,
+        }}
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain-strict px-5 pt-4 pb-4">
+        {/* Arrow */}
+        <div
+          aria-hidden
+          className="absolute w-3 h-3 bg-white rotate-45"
+          style={{
+            left: arrowLeft - 6,
+            ...(placeAbove
+              ? { bottom: -6, boxShadow: "2px 2px 4px rgba(0,0,0,0.06)" }
+              : { top: -6, boxShadow: "-2px -2px 4px rgba(0,0,0,0.06)" }),
+          }}
+        />
+        <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain-strict px-5 pt-4 pb-4 relative">
           {children}
         </div>
-      </aside>
+      </div>
     </div>
   );
 }
 
 /* ───────────── Card body content ───────────── */
 
-const DotCardPanel = ({ dot, activeView, onClose }: Props) => {
+const DotCardPanel = ({ dot, activeView, anchorPos, onClose }: Props) => {
   const isMobile = useIsMobile();
   const phone = firstPhone(dot.contact);
   const directionsUrl = `https://www.google.com/maps/dir/?api=1&destination=${dot.lat},${dot.lng}`;
@@ -296,7 +340,7 @@ const DotCardPanel = ({ dot, activeView, onClose }: Props) => {
               {children}
             </MobileBottomSheet>
           ) : (
-            <SidePanel onClose={onClose}>{children}</SidePanel>
+            <DotPopover onClose={onClose} anchorPos={anchorPos}>{children}</DotPopover>
           );
 
         return (
