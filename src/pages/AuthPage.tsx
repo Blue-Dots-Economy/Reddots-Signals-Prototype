@@ -31,7 +31,7 @@ const AuthPage = () => {
       rowData: {},
     });
   }
-  return <Navigate to="/home" replace />;
+  return <Navigate to="/services" replace />;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
