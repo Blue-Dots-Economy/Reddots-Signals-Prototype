@@ -16,6 +16,22 @@ const AuthPage = () => {
     return <Navigate to="/home" replace />;
   }
 
+  // No login screen — auto-enter as guest and go straight to the map.
+  if (!autoEntered.current) {
+    autoEntered.current = true;
+    const guestPhone = `00000${Math.floor(10000 + Math.random() * 90000)}`;
+    saveProfile({
+      persona: "red_dots_user",
+      name: "Guest",
+      phone: guestPhone,
+      lat: 26.1445,
+      lng: 91.7362,
+      area: "Guwahati",
+      rowData: {},
+    });
+  }
+  return <Navigate to="/home" replace />;
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const digits = phone.replace(/\D/g, "");
