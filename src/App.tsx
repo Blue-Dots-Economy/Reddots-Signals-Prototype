@@ -27,6 +27,8 @@ const App = () => (
 
           {/* Post-login map + chat routing */}
           <Route path="/home" element={<LaunchPage />} />
+          <Route path="/services" element={<LaunchPage forceView="services" />} />
+          <Route path="/accidents" element={<LaunchPage forceView="accidents" />} />
 
           {/* Admin */}
           <Route path="/admin-login" element={<AdminLogin />} />

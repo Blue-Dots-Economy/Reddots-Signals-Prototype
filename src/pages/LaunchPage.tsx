@@ -107,10 +107,10 @@ const mapPotholeRow = (r: any): RedDot => ({
   raw: r,
 });
 
-const LaunchPage = () => {
+const LaunchPage = ({ forceView }: { forceView?: RedDotsView }) => {
   const navigate = useNavigate();
   const [profile, setProfile] = useState<UserProfile | null>(() => loadProfile());
-  const [activeView, setActiveView] = useState<RedDotsView | null>(() => loadProfile()?.view ?? null);
+  const [activeView, setActiveView] = useState<RedDotsView | null>(() => forceView ?? loadProfile()?.view ?? null);
   const [viewMode, setViewMode] = useState<ViewMode>("map");
   const [activeFilters, setActiveFilters] = useState<RedDotFilters>({});
   const [services, setServices] = useState<RedDot[]>([]);
@@ -123,8 +123,8 @@ const LaunchPage = () => {
       return;
     }
     setProfile(p);
-    setActiveView(p.view ?? null);
-  }, [navigate]);
+    setActiveView(forceView ?? p.view ?? null);
+  }, [navigate, forceView]);
 
   // Fetch service providers from student_dots
   useEffect(() => {
@@ -181,9 +181,14 @@ const LaunchPage = () => {
   };
 
   const handleSwitchView = (v: RedDotsView) => {
-    setActiveView(v);
     setProfileView(v);
     setActiveFilters({});
+    if (forceView) {
+      // Slug-based routing: switching views navigates to the other map's URL.
+      navigate(`/${v}`, { replace: true });
+      return;
+    }
+    setActiveView(v);
   };
 
   const dots: RedDot[] = activeView === "accidents" ? hotspots : services;
