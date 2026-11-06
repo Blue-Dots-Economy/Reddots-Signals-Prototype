@@ -123,8 +123,8 @@ const LaunchPage = ({ forceView }: { forceView?: RedDotsView }) => {
       return;
     }
     setProfile(p);
-    setActiveView(p.view ?? null);
-  }, [navigate]);
+    setActiveView(forceView ?? p.view ?? null);
+  }, [navigate, forceView]);
 
   // Fetch service providers from student_dots
   useEffect(() => {
@@ -181,9 +181,14 @@ const LaunchPage = ({ forceView }: { forceView?: RedDotsView }) => {
   };
 
   const handleSwitchView = (v: RedDotsView) => {
-    setActiveView(v);
     setProfileView(v);
     setActiveFilters({});
+    if (forceView) {
+      // Slug-based routing: switching views navigates to the other map's URL.
+      navigate(`/${v}`, { replace: true });
+      return;
+    }
+    setActiveView(v);
   };
 
   const dots: RedDot[] = activeView === "accidents" ? hotspots : services;
