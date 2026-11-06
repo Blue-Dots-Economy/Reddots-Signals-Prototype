@@ -107,10 +107,10 @@ const mapPotholeRow = (r: any): RedDot => ({
   raw: r,
 });
 
-const LaunchPage = () => {
+const LaunchPage = ({ forceView }: { forceView?: RedDotsView }) => {
   const navigate = useNavigate();
   const [profile, setProfile] = useState<UserProfile | null>(() => loadProfile());
-  const [activeView, setActiveView] = useState<RedDotsView | null>(() => loadProfile()?.view ?? null);
+  const [activeView, setActiveView] = useState<RedDotsView | null>(() => forceView ?? loadProfile()?.view ?? null);
   const [viewMode, setViewMode] = useState<ViewMode>("map");
   const [activeFilters, setActiveFilters] = useState<RedDotFilters>({});
   const [services, setServices] = useState<RedDot[]>([]);
