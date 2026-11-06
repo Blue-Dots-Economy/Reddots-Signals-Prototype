@@ -10,6 +10,7 @@ const AuthPage = () => {
   const [phone, setPhone] = useState("");
   const [loading, setLoading] = useState(false);
   const [notFound, setNotFound] = useState(false);
+  const autoEntered = useRef(false);
 
   const existing = loadProfile();
   if (existing) {
